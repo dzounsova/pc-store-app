@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="title">#{msg.racunar}</ui:define>
+    <ui:define name="pageTitle">#{kontrolerObradeRacunara.edit ? msg.izmenaRacunara : msg.noviRacunar}</ui:define>
+    <ui:define name ="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{kontrolerObradeRacunara.ucitajPocetnuPoruku()}" />
+        </f:metadata>
+        <h:form id="racunar">
+            <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="margin-bottom: 20px;">
+                <p:outputLabel for="naziv" value="#{msg.naziv}: " />
+                <p:inputText id="naziv"  value="#{kontrolerObradeRacunara.racunar.naziv}" required="true" requiredMessage="Morate uneti naziv komponente."/>
+
+                <p:outputLabel for ="kolicina" value="#{msg.kolicina}: " />
+                <p:spinner id="kolicina" value="#{kontrolerObradeRacunara.racunar.kolicinaNaZalihi}" min="1"/>
+
+                <p:outputLabel for="specifikacija" value="#{msg.specifikacija}: "/>
+                <p:inputTextarea id="specifikacija" value="#{kontrolerObradeRacunara.racunar.specifikacija}" rows="5" cols="40"/>
+            </p:panelGrid>
+
+            <p:dataTable id="dtOdabraneKomponente" var="ugradnja" value="#{kontrolerObradeRacunara.racunar.ugradnje}" widgetVar="dtOdabraneKomponente" scrollable="true" resizeMode="expand"
+                         emptyMessage="#{msg.nemaUgradnji}" selectionMode="single" selection="#{kontrolerObradeRacunara.ugradnja}" rowKey="#{ugradnja.komponenta.id}">
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="#{msg.komponente}" />
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column id="tipKomp" headerText="#{msg.tip}" sortBy="#{ugradnja.komponenta.tip.naziv}">
+                    <h:outputText value="#{ugradnja.komponenta.tip.naziv}" />
+                </p:column>
+
+                <p:column headerText="#{msg.proizvodjac}" sortBy="#{ugradnja.komponenta.proizvodjac}">
+                    <h:outputText value="#{ugradnja.komponenta.proizvodjac}" />
+                </p:column>
+
+                <p:column headerText="#{msg.naziv}" sortBy="#{ugradnja.komponenta.naziv}">
+                    <h:outputText value="#{ugradnja.komponenta.naziv}" />
+                </p:column>
+
+                <p:column headerText="#{msg.cena}" sortBy="#{ugradnja.komponenta.prodajnaCena}">
+                    <h:outputText value="#{ugradnja.komponenta.prodajnaCena}" />
+                </p:column>
+
+                <p:column headerText="#{msg.kolicina}" sortBy="#{ugradnja.kolicina}">
+                    <h:outputText value="#{ugradnja.kolicina}" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:outputPanel style="text-align: right">
+                        <h:outputText value="#{msg.cena}: "/>
+                        <h:outputText value="#{kontrolerObradeRacunara.ukupnaVrednost()}"/>
+                    </p:outputPanel>
+                </f:facet>
+            </p:dataTable>
+
+            <p:panelGrid id="panelKolicina" columns="2" styleClass="ui-panelgrid-blank" style="margin-top: 10px;">
+                <p:outputLabel value="#{msg.kolicina}: " />
+                <p:spinner value="#{kontrolerObradeRacunara.kolicina}" min="1" max="4" disabled="#{kontrolerObradeRacunara.disableKolicina()}"/>
+            </p:panelGrid>
+            <p:panel styleClass="buttonsPanel">
+                <p:commandButton icon="fa fa-arrow-up" value="#{msg.dodaj}" action="#{kontrolerObradeRacunara.dodajUgradnju()}" update="dtOdabraneKomponente" disabled="#{kontrolerObradeRacunara.edit}"/>
+                <p:commandButton icon="fa fa-arrow-down" value="#{msg.ukloni}" action="#{kontrolerObradeRacunara.ukloniUgradnju()}" update="dtOdabraneKomponente" disabled="#{kontrolerObradeRacunara.edit}"/>
+            </p:panel>
+
+            <p:dataTable id="dtRaspoloziveKomponente" var="komponenta" value="#{kontrolerObradeRacunara.komponente}" widgetVar="dtRaspoloziveKomponente" scrollable="true" scrollHeight="250"
+                         emptyMessage="#{msg.komponentaNePostoji}" filteredValue="#{filterKomponenti.filtriraneKomponente}"
+                         selectionMode="single" selection="#{kontrolerObradeRacunara.komponenta}" rowKey="#{komponenta.id}">
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="#{msg.prikazKomponenti}" />
+                    </p:outputPanel>
+                </f:facet>
+                <p:ajax event="rowSelect" update="racunar:panelKolicina"/>
+
+                <p:column headerText="#{msg.sifra}" sortBy="#{komponenta.id}" filterBy="#{komponenta.id}" filterMatchMode="exact">
+                    <h:outputText value="#{komponenta.id}" />
+                </p:column>
+
+                <p:column id="tipKomp" headerText="#{msg.tip}" sortBy="#{komponenta.tip.naziv}" filterBy="#{komponenta.tip.naziv}" filterMatchMode="exact">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('dtRaspoloziveKomponente').filter()">
+                            <f:selectItems value="#{kontrolerPretrageKomponenti.tipovi}" var="tip" itemValue="#{tip.naziv}" itemLabel="#{tip.naziv}"/>
+                        </p:selectOneMenu>       
+                    </f:facet>
+                    <h:outputText value="#{komponenta.tip.naziv}" />
+                </p:column>
+
+                <p:column headerText="#{msg.proizvodjac}" sortBy="#{komponenta.proizvodjac}" filterBy="#{komponenta.proizvodjac}" filterMatchMode="contains">
+                    <h:outputText value="#{komponenta.proizvodjac}" />
+                </p:column>
+
+                <p:column headerText="#{msg.naziv}" sortBy="#{komponenta.naziv}" filterBy="#{komponenta.naziv}" filterMatchMode="contains">
+                    <h:outputText value="#{komponenta.naziv}" />
+                </p:column>
+
+                <p:column headerText="#{msg.cena}" sortBy="#{komponenta.prodajnaCena}" filterBy="#{komponenta.prodajnaCena}" filterFunction="#{filterKomponenti.filtrirajPoCeni}">
+                    <h:outputText value="#{komponenta.prodajnaCena}" />
+                </p:column>
+
+                <p:column headerText="#{msg.kolicina}" sortBy="#{komponenta.kolicinaNaZalihi}" filterBy="#{komponenta.kolicinaNaZalihi}" filterMatchMode="exact">
+                    <h:outputText value="#{komponenta.kolicinaNaZalihi}" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:outputPanel>
+                    </p:outputPanel>
+                </f:facet>
+            </p:dataTable>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#racunar\\:tabView\\:dtRaspoloziveKomponente\\:tipKomp').val("Maticna ploca");
+                    PF('dtRaspoloziveKomponente').filter();
+                });
+            </script>
+            <p:panel styleClass="buttonsPanel">
+                <p:commandButton icon="fa fa-save" value="#{msg.sacuvaj}" action="#{kontrolerObradeRacunara.zapamtiRacunar()}"/>
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

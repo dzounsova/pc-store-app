@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="title">#{msg.komponente}</ui:define>
+    <ui:define name="pageTitle">#{msg.radSaKomponentama}</ui:define>
+    <ui:define name ="content">
+        <h:form id="komponente">
+            <p:panel id="buttonsPanel" styleClass="buttonsPanel">
+                <p:commandButton icon="fa fa-fw fa-plus-circle" value="#{msg.kreiraj}" action="komponenta"/>
+                <p:commandButton icon="fa fa-fw fa-search" value="#{msg.detalji}" process="dtKomponente"  update="komponentaDetalji" onclick="PF('komponentaDialog').show()" disabled="#{kontrolerPretrageKomponenti.disableButtons()}"/>
+                <p:commandButton icon="fa fa-fw fa-edit" value="#{msg.izmeni}" action="#{kontrolerPretrageKomponenti.ucitajFormuZaIzmenuKomponente()}" disabled="#{kontrolerPretrageKomponenti.disableButtons()}"/>
+                <p:commandButton icon="fa fa-fw fa-trash" value="#{msg.obrisi}" update="dtKomponente" action="#{kontrolerPretrageKomponenti.obrisiKomponentu()}" disabled="#{kontrolerPretrageKomponenti.disableButtons()}">
+                    <p:confirm header="#{msg.potvrdi}" message="#{msg.potvrdaBrisanjaKomponente}"/>
+                </p:commandButton>
+            </p:panel>
+
+            <p:dataTable id="dtKomponente" var="komponenta" value="#{kontrolerPretrageKomponenti.komponente}" widgetVar="dtKomponente" scrollable="true" scrollHeight="400"
+                         emptyMessage="#{msg.komponentaNePostoji}" filteredValue="#{filterKomponenti.filtriraneKomponente}"
+                         selectionMode="single" selection="#{kontrolerPretrageKomponenti.komponenta}" rowKey="#{komponenta.id}">
+                <p:ajax event="rowSelect" update=":komponente:buttonsPanel"/>
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="#{msg.prikazKomponenti}" />
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="#{msg.sifra}" sortBy="#{komponenta.id}" filterBy="#{komponenta.id}" filterMatchMode="exact">
+                    <h:outputText value="#{komponenta.id}" />
+                </p:column>
+
+                <p:column headerText="#{msg.tip}" sortBy="#{komponenta.tip.naziv}" filterBy="#{komponenta.tip.naziv}" filterMatchMode="exact">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('dtKomponente').filter()">
+                            <f:selectItem itemLabel="#{msg.odaberi}" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{kontrolerPretrageKomponenti.tipovi}" var="tip" itemValue="#{tip.naziv}" itemLabel="#{tip.naziv}"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <h:outputText value="#{komponenta.tip.naziv}" />
+                </p:column>
+
+                <p:column headerText="#{msg.proizvodjac}" sortBy="#{komponenta.proizvodjac}" filterBy="#{komponenta.proizvodjac}" filterMatchMode="contains">
+                    <h:outputText value="#{komponenta.proizvodjac}" />
+                </p:column>
+
+                <p:column headerText="#{msg.naziv}" sortBy="#{komponenta.naziv}" filterBy="#{komponenta.naziv}" filterMatchMode="contains">
+                    <h:outputText value="#{komponenta.naziv}" />
+                </p:column>
+
+                <p:column headerText="#{msg.cena}" sortBy="#{komponenta.prodajnaCena}" filterBy="#{komponenta.prodajnaCena}" filterFunction="#{filterKomponenti.filtrirajPoCeni}">
+                    <h:outputText value="#{komponenta.prodajnaCena}" />
+                </p:column>
+
+                <p:column headerText="#{msg.kolicina}" sortBy="#{komponenta.kolicinaNaZalihi}" filterBy="#{komponenta.kolicinaNaZalihi}" filterMatchMode="exact">
+                    <h:outputText value="#{komponenta.kolicinaNaZalihi}" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:outputPanel>
+                    </p:outputPanel>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+        <p:dialog header="#{msg.komponenta} - #{msg.detalji}" appendTo="@(body)" widgetVar="komponentaDialog"  modal="true" showEffect="fade" hideEffect="fade" resizable="true" width="500px">
+            <p:outputPanel id="komponentaDetalji" style="text-align:center;">
+                <p:panelGrid  columns="2">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="#{msg.komponenta}" />
+                        </p:outputPanel>
+                    </f:facet>
+
+                    <h:outputText value="#{msg.sifra}" />
+                    <h:outputText value="#{kontrolerPretrageKomponenti.komponenta.id}" />
+
+                    <h:outputText value="#{msg.tip}" />
+                    <h:outputText value="#{kontrolerPretrageKomponenti.komponenta.tip.naziv}" />
+
+                    <h:outputText value="#{msg.proizvodjac}" />
+                    <h:outputText value="#{kontrolerPretrageKomponenti.komponenta.proizvodjac}"/>
+
+                    <h:outputText value="#{msg.naziv}" />
+                    <h:outputText value="#{kontrolerPretrageKomponenti.komponenta.naziv}"/>
+
+                    <h:outputText value="#{msg.cena}" />
+                    <h:outputText value="#{kontrolerPretrageKomponenti.komponenta.prodajnaCena}"/>
+
+                    <h:outputText value="#{msg.kolicina}" />
+                    <h:outputText value="#{kontrolerPretrageKomponenti.komponenta.kolicinaNaZalihi}"/>
+
+                    <h:outputText value="#{msg.specifikacija}" />
+                    <h:outputText value="#{kontrolerPretrageKomponenti.komponenta.specifikacija}"/>
+                </p:panelGrid>
+            </p:outputPanel>
+        </p:dialog>
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="#{msg.da}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="#{msg.no}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
+    </ui:define>
+</ui:composition>
+

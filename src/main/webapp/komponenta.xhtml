@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="title">#{msg.komponenta}</ui:define>
+    <ui:define name="pageTitle">#{kontrolerObradeKomponenti.edit ? msg.izmenaKomponente : msg.novaKomponenta}</ui:define>
+    <ui:define name ="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{kontrolerObradeKomponenti.ucitajPocetnuPoruku()}" />
+        </f:metadata>
+        <h:form id="komponenta">
+            <p:panelGrid columns="2" styleClass="ui-panelgrid-blank">
+                <p:outputLabel for="tip" value="#{msg.tip}: "/>
+                <p:selectOneMenu id="tip" value="#{kontrolerObradeKomponenti.komponenta.tip}" converter="konverterTipa" required="true" requiredMessage="Morate izabrati tip komponente.">
+                    <f:selectItems value="#{kontrolerObradeKomponenti.tipovi}" var="tip" itemValue="#{tip}" itemLabel="#{tip.naziv}"/>
+                </p:selectOneMenu> 
+
+                <p:outputLabel for="proizvodjac" value="#{msg.proizvodjac}: "/>
+                <p:inputText id="proizvodjac"  value="#{kontrolerObradeKomponenti.komponenta.proizvodjac}" required="true" requiredMessage="Morate uneti proizvodjaca komponente."/>
+
+                <p:outputLabel for="naziv" value="#{msg.naziv}: " />
+                <p:inputText id="naziv"  value="#{kontrolerObradeKomponenti.komponenta.naziv}" required="true" requiredMessage="Morate uneti naziv komponente."/>
+
+                <p:outputLabel for="cena" value="#{msg.cena}: " />
+                <p:inputText id="cena"  value="#{kontrolerObradeKomponenti.komponenta.prodajnaCena}" required="true" requiredMessage="Morate uneti cenu komponente."/>
+
+                <p:outputLabel for ="kolicina" value="#{msg.kolicina}: " />
+                <p:spinner id="kolicina" value="#{kontrolerObradeKomponenti.komponenta.kolicinaNaZalihi}" min="1"/>
+
+                <p:outputLabel for="specifikacija" value="#{msg.specifikacija}: "/>
+                <p:inputTextarea id="specifikacija" value="#{kontrolerObradeKomponenti.komponenta.specifikacija}" rows="5" cols="40"/> 
+            </p:panelGrid>
+            <p:panel styleClass="buttonsPanel">
+                <p:commandButton icon="fa fa-save" value="#{msg.sacuvaj}" action="#{kontrolerObradeKomponenti.zapamtiKomponentu()}"/>
+                <p:commandButton icon="fa fa-refresh" value="#{msg.osvezi}" type="reset" />
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+

@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="title">#{msg.racunari}</ui:define>
+    <ui:define name="pageTitle">#{msg.radSaRacunarima}</ui:define>
+    <ui:define name ="content">
+
+        <h:form id="racunari">
+            <p:panel id="buttonsPanel" styleClass="buttonsPanel">
+                <p:commandButton icon="fa fa-fw fa-plus-circle" value="#{msg.kreiraj}" action="racunar"/>
+                <p:commandButton icon="fa fa-fw fa-search" value="#{msg.detalji}" process="dtRacunari"  update="racunarDetalji" onclick="PF('racunarDialog').show()" disabled="#{kontrolerPretrageRacunara.disableButtons()}"/>
+                <p:commandButton icon="fa fa-fw fa-edit" value="#{msg.izmeni}" action="#{kontrolerPretrageRacunara.ucitajFormuZaIzmenuRacunara()}" disabled="#{kontrolerPretrageRacunara.disableButtons()}"/>
+                <p:commandButton icon="fa fa-fw fa-trash" value="#{msg.obrisi}" update="dtRacunari" action="#{kontrolerPretrageRacunara.obrisiRacunar()}" disabled="#{kontrolerPretrageRacunara.disableButtons()}">
+                    <p:confirm header="#{msg.potvrdi}" message="#{msg.potvrdaBrisanjaRacunara}"/>
+                </p:commandButton>
+            </p:panel>
+
+            <p:dataTable id="dtRacunari" var="racunar" value="#{kontrolerPretrageRacunara.racunari}" widgetVar="dtRacunari" scrollable="true" scrollHeight="400"
+                         emptyMessage="#{msg.racunarNePostoji}" filteredValue="#{filterRacunara.filtriraniRacunari}"
+                         selectionMode="single" selection="#{kontrolerPretrageRacunara.racunar}" rowKey="#{racunar.id}">
+                <p:ajax event="rowSelect" update=":racunari:buttonsPanel"/>
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="#{msg.prikazKomponenti}" />
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="#{msg.sifra}" sortBy="#{racunar.id}" filterBy="#{racunar.id}" filterMatchMode="exact">
+                    <h:outputText value="#{racunar.id}" />
+                </p:column>
+
+                <p:column headerText="#{msg.naziv}" sortBy="#{racunar.naziv}" filterBy="#{racunar.naziv}" filterMatchMode="contains">
+                    <h:outputText value="#{racunar.naziv}" />
+                </p:column>
+
+                <p:column headerText="#{msg.cena}" sortBy="#{racunar.prodajnaCena}" filterBy="#{racunar.prodajnaCena}" filterFunction="#{filterRacunara.filtrirajPoCeni}">
+                    <h:outputText value="#{racunar.prodajnaCena}" />
+                </p:column>
+
+                <p:column headerText="#{msg.kolicina}" sortBy="#{racunar.kolicinaNaZalihi}" filterBy="#{racunar.kolicinaNaZalihi}" filterMatchMode="exact">
+                    <h:outputText value="#{racunar.kolicinaNaZalihi}" />
+                </p:column>
+
+                <p:column headerText="#{msg.zaposleni}" sortBy="#{racunar.zaposleni.ime}" filterBy="#{racunar.zaposleni.ime} #{racunar.zaposleni.prezime}" filterFunction="#{filterRacunara.filtrirajPoImenuIPrezimenu}">
+                    <h:outputText value="#{racunar.zaposleni.ime} #{racunar.zaposleni.prezime}" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:outputPanel>
+                    </p:outputPanel>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+        <p:dialog header="#{msg.racunar} - #{msg.detalji}" appendTo="@(body)" widgetVar="racunarDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="true">
+            <p:outputPanel id="racunarDetalji" styleClass="center-allign">
+                <p:panelGrid columns="2">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="#{msg.racunar}" />
+                        </p:outputPanel>
+                    </f:facet>
+
+                    <h:outputText value="#{msg.sifra}" />
+                    <h:outputText value="#{kontrolerPretrageRacunara.racunar.id}" />
+
+                    <h:outputText value="#{msg.naziv}" />
+                    <h:outputText value="#{kontrolerPretrageRacunara.racunar.naziv}"/>
+
+                    <h:outputText value="#{msg.cena}" />
+                    <h:outputText value="#{kontrolerPretrageRacunara.racunar.prodajnaCena}"/>
+
+                    <h:outputText value="#{msg.kolicina}" />
+                    <h:outputText value="#{kontrolerPretrageRacunara.racunar.kolicinaNaZalihi}"/>
+                </p:panelGrid>
+                <br/>
+                <p:dataTable var="ugradnja" value="#{kontrolerPretrageRacunara.racunar.ugradnje}" style="max-width: 800px; max-height: 800px;">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="#{msg.komponente}" />
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="#{msg.tip}">
+                        <h:outputText value="#{ugradnja.komponenta.tip.naziv}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg.naziv}">
+                        <h:outputText value="#{ugradnja.komponenta.naziv}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:outputPanel>
+        </p:dialog>
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="#{msg.da}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="#{msg.no}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
+    </ui:define>
+</ui:composition>
+

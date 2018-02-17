@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="title">#{msg.racuni}</ui:define>
+    <ui:define name="pageTitle">#{msg.radSaRacunima}</ui:define>
+    <ui:define name ="content">
+
+        <h:form id="racuni">
+            <p:panel id="buttonsPanel" styleClass="buttonsPanel">
+                <p:commandButton icon="fa fa-fw fa-plus-circle" value="#{msg.kreiraj}" action="racun"/>
+                <p:commandButton icon="fa fa-fw fa-search" value="#{msg.detalji}" process="dtRacuni"  update="racunDetalji" onclick="PF('racunDialog').show()" disabled="#{kontrolerPretrageRacuna.disableButtons()}"/>
+                <p:commandButton icon="fa fa-fw fa-trash" value="#{msg.obrisi}" update="dtRacuni" action="#{kontrolerPretrageRacuna.obrisiRacun()}" disabled="#{kontrolerPretrageRacuna.disableButtons()}">
+                    <p:confirm header="#{msg.potvrdi}" message="#{msg.potvrdaBrisanjaRacuna}"/>
+                </p:commandButton>
+            </p:panel>
+
+            <p:dataTable id="dtRacuni" var="racun" value="#{kontrolerPretrageRacuna.racuni}" widgetVar="dtRacuni" scrollable="true" scrollHeight="400"
+                         emptyMessage="#{msg.racunNePostoji}" filteredValue="#{filterRacuna.filtriraniRacuni}"
+                         selectionMode="single" selection="#{kontrolerPretrageRacuna.racun}" rowKey="#{racun.id}">
+                <p:ajax event="rowSelect" update=":racuni:buttonsPanel"/>
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="#{msg.prikazRacuna}" />
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="#{msg.sifra}" sortBy="#{racun.id}" filterBy="#{racun.id}" filterMatchMode="exact">
+                    <h:outputText value="#{racun.id}" />
+                </p:column>
+
+                <p:column headerText="#{msg.ukupnaVrednost}" sortBy="#{racun.ukupnaVrednost}" filterBy="#{racun.ukupnaVrednost}" filterFunction="#{filterRacuna.filtrirajPoCeni}">
+                    <h:outputText value="#{racun.ukupnaVrednost}" />
+                </p:column>
+
+                <p:column headerText="#{msg.datum}" sortBy="#{racun.datum}" filterBy="#{racun.datum}" filterFunction="#{filterRacuna.filtrirajPoDatumu}">
+                    <f:facet name="filter">
+                        <p:calendar  pattern="yyyy-MM-dd HH:mm:ss">
+                            <p:ajax event="dateSelect"  oncomplete="PF('dtRacuni').filter()"/>
+                        </p:calendar>
+                    </f:facet>
+                    <h:outputText value="#{racun.datum}" >
+                        <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="#{msg.zaposleni}" sortBy="#{racun.zaposleni.ime}" filterBy="#{racun.zaposleni.ime} #{racun.zaposleni.prezime}" filterFunction="#{filterRacuna.filtrirajPoImenuIPrezimenu}">
+                    <h:outputText value="#{racun.zaposleni.ime} #{racun.zaposleni.prezime}" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:outputPanel>
+                    </p:outputPanel>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+        <p:dialog header="#{msg.racun} - #{msg.detalji}" appendTo="@(body)" widgetVar="racunDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="true">
+            <p:outputPanel id="racunDetalji" styleClass="center-allign">
+                <p:panelGrid columns="2">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="#{msg.racun}" />
+                        </p:outputPanel>
+                    </f:facet>
+                    <h:outputText value="#{msg.sifra}" />
+                    <h:outputText value="#{kontrolerPretrageRacuna.racun.id}" />
+
+                    <h:outputText value="#{msg.datum}" />
+                    <h:outputText value="#{kontrolerPretrageRacuna.racun.datum}"/>
+
+                    <h:outputText value="#{msg.zaposleni}" />
+                    <h:outputText value="#{kontrolerPretrageRacuna.racun.zaposleni.ime} #{kontrolerPretrageRacuna.racun.zaposleni.prezime}"/>
+
+                    <h:outputText value="#{msg.ukupnaVrednost}" />
+                    <h:outputText value="#{kontrolerPretrageRacuna.racun.ukupnaVrednost}"/>
+                </p:panelGrid>
+                <br/>
+                <p:dataTable var="stavka" value="#{kontrolerPretrageRacuna.racun.stavkeRacuna}" style="max-width: 800px; max-height: 800px;">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <h:outputText value="#{msg.stavkeRacuna}" />
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:column headerText="#">
+                        <h:outputText value="#{stavka.redniBroj}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg.naziv}">
+                        <h:outputText value="#{stavka.racunarKomponenta.naziv}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg.kolicina}">
+                        <h:outputText value="#{stavka.kolicina}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg.cena}">
+                        <h:outputText value="#{stavka.racunarKomponenta.prodajnaCena}"/>
+                    </p:column>
+                </p:dataTable> 
+            </p:outputPanel>
+        </p:dialog>
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="#{msg.da}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="#{msg.no}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
+    </ui:define>
+</ui:composition>
+

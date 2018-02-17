@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="title">#{msg.racun}</ui:define>
+    <ui:define name="pageTitle">#{msg.noviRacun}</ui:define>
+    <ui:define name ="content">
+        <h:form id="racun">
+            <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="margin-bottom: 20px;">
+            </p:panelGrid>
+
+            <p:dataTable id="dtStavkeRacuna" var="stavka" value="#{kontrolerObradeRacuna.racun.stavkeRacuna}" widgetVar="dtStavkeRacuna" scrollable="true" resizeMode="expand"
+                         emptyMessage="#{msg.nemaStavkiRacuna}" selectionMode="single" selection="#{kontrolerObradeRacuna.stavkaRacuna}" rowKey="#{stavka.redniBroj}">
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="#{msg.stavkeRacuna}" />
+                    </p:outputPanel>
+                </f:facet>
+                
+                <p:column id="rb" headerText="#">
+                    <h:outputText value="#{kontrolerObradeRacuna.vratiRedniBroj(stavka)}" />
+                </p:column>
+
+                <p:column id="tip" headerText="#{msg.tip}">
+                    <h:outputText value="#{kontrolerObradeRacuna.vratiTip(stavka.racunarKomponenta)}" />
+                </p:column>
+
+                <p:column headerText="#{msg.naziv}" sortBy="#{stavka.racunarKomponenta.naziv}">
+                    <h:outputText value="#{stavka.racunarKomponenta.naziv}" />
+                </p:column>
+
+                <p:column headerText="#{msg.cena}" sortBy="#{stavka.prodajnaCena}">
+                    <h:outputText value="#{stavka.racunarKomponenta.prodajnaCena}" />
+                </p:column>
+
+                <p:column headerText="#{msg.kolicina}" sortBy="#{stavka.kolicina}">
+                    <h:outputText value="#{stavka.kolicina}" />
+                </p:column>
+
+                <p:column headerText="#{msg.ukupnaVrednost}" sortBy="#{stavka.ukupnaVrednost}">
+                    <h:outputText value="#{stavka.ukupnaVrednost}" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:outputPanel style="text-align: right">
+                        <h:outputText value="#{msg.ukupnaVrednost}: "/>
+                        <h:outputText value="#{kontrolerObradeRacuna.ukupnaVrednost()}"/>
+                    </p:outputPanel>
+                </f:facet>
+            </p:dataTable>
+
+            <p:panelGrid id="panelKolicina" columns="2" styleClass="ui-panelgrid-blank" style="margin-top: 10px;">
+                <p:outputLabel value="#{msg.kolicina}: " />
+                <p:spinner value="#{kontrolerObradeRacuna.kolicina}" min="1"/>
+            </p:panelGrid>
+            <p:panel styleClass="buttonsPanel">
+                <p:commandButton icon="fa fa-arrow-up" value="#{msg.dodaj}" action="#{kontrolerObradeRacuna.dodajStavku()}" update="dtStavkeRacuna"/>
+                <p:commandButton icon="fa fa-arrow-down" value="#{msg.ukloni}" action="#{kontrolerObradeRacuna.ukloniStavku()}" update="dtStavkeRacuna"/>
+            </p:panel>
+
+            <p:dataTable id="dtRacunariIKomponente" var="rk" value="#{kontrolerObradeRacuna.racunariIkomponente}" widgetVar="dtRacunariIKomponente" scrollable="true" scrollHeight="250"
+                         emptyMessage="#{msg.racunarKomponentaNepostoji}" selectionMode="single" selection="#{kontrolerObradeRacuna.racunarKomponenta}" rowKey="#{rk.id}">
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="#{msg.prikazRacunaraIKomponenti}" />
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="#{msg.sifra}" sortBy="#{rk.id}" filterBy="#{rk.id}" filterMatchMode="exact">
+                    <h:outputText value="#{rk.id}" />
+                </p:column>
+
+                <p:column id="tip" headerText="#{msg.tip}" filterBy="#{kontrolerObradeRacuna.isRacunar(rk)}" filterMatchMode="equals">
+                    <f:facet name="filter">
+                        <p:selectOneButton onchange="PF('dtRacunariIKomponente').filter()" style="font-size: small;">
+                            <f:converter converterId="javax.faces.Boolean" />
+                            <f:selectItem itemLabel="#{msg.svi}" itemValue="" />
+                            <f:selectItem itemLabel="#{msg.racunar}" itemValue="true" />
+                            <f:selectItem itemLabel="#{msg.komponenta}" itemValue="false" />
+                        </p:selectOneButton>
+                    </f:facet>
+                    <h:outputText value="#{kontrolerObradeRacuna.vratiTip(rk)}" />
+                </p:column>
+
+                <p:column headerText="#{msg.naziv}" sortBy="#{rk.naziv}" filterBy="#{rk.naziv}" filterMatchMode="contains">
+                    <h:outputText value="#{rk.naziv}" />
+                </p:column>
+
+                <p:column headerText="#{msg.cena}" sortBy="#{rk.prodajnaCena}" filterBy="#{rk.prodajnaCena}" filterFunction="#{filterKomponenti.filtrirajPoCeni}">
+                    <h:outputText value="#{rk.prodajnaCena}" />
+                </p:column>
+
+                <p:column headerText="#{msg.kolicina}" sortBy="#{rk.kolicinaNaZalihi}" filterBy="#{rk.kolicinaNaZalihi}" filterMatchMode="exact">
+                    <h:outputText value="#{rk.kolicinaNaZalihi}" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:outputPanel>
+                    </p:outputPanel>
+                </f:facet>
+            </p:dataTable>
+            
+            <p:panel styleClass="buttonsPanel">
+                <p:commandButton icon="fa fa-save" value="#{msg.sacuvaj}" action="#{kontrolerObradeRacuna.zapamtiRacun()}"/>
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

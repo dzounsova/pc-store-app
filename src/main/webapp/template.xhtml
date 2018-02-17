@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html">
+        <f:loadBundle basename="message" var="msg"/>
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <h:outputStylesheet name="css/style.css"/>
+                <title>#{msg.prodavnica} - <ui:insert name="title"/></title>
+            </f:facet>
+        </h:head>
+
+        <h:body>
+            <p:layout fullPage="true" >
+
+                <h:form>
+                    <p:growl id="growl" autoUpdate="true" showDetail="true" globalOnly="true"/>
+                </h:form>
+
+                <p:layoutUnit position="north" size="55" resizable="true" closable="true" collapsible="true" gutter="0">
+                </p:layoutUnit>
+
+                <p:layoutUnit position="south" size="55" closable="true" collapsible="true" gutter="0">
+                </p:layoutUnit>
+
+                <p:layoutUnit position="west" size="253" header="#{msg.prodavnica}" collapsible="true" gutter="0">
+                    <div id="user">
+                        <div id="avatar">
+                            <p:commandLink action="#{kontrolerZaposlenih.userClicked()}" update="logoutForm">
+                                <p:graphicImage id="img" name="#{kontrolerZaposlenih.zaposleni.slika}"/>
+                            </p:commandLink>
+                        </div>
+                        <p:outputLabel value="#{msg.dobrodosli}"/>
+                        <br/>
+                        <p:outputLabel value="#{kontrolerZaposlenih.zaposleni.ime} #{kontrolerZaposlenih.zaposleni.prezime}"/>
+                        <h:form id="logoutForm">
+                            <p:graphicImage name="images/white-triangle.png" rendered="#{kontrolerZaposlenih.logoutButtonRendered}"/>
+                            <p:menu rendered="#{kontrolerZaposlenih.logoutButtonRendered}">
+                                <p:menuitem value="#{msg.odjava}" action="#{kontrolerZaposlenih.logout()}"/>
+                            </p:menu>
+                        </h:form>                        
+                    </div>
+
+                    <h:form>
+                        <p:menu toggleable="true">
+                            <p:submenu label="#{msg.racunari}">
+                                <p:menuitem value="#{msg.noviRacunar}" outcome="racunar"/>
+                                <p:menuitem value="#{msg.radSaRacunarima}" outcome="racunari"/>
+                            </p:submenu>
+                            <p:submenu label="#{msg.komponente}">
+                                <p:menuitem value="#{msg.novaKomponenta}" outcome="komponenta"/>
+                                <p:menuitem value="#{msg.radSaKomponentama}" outcome="komponente"/>
+                            </p:submenu>
+                            <p:submenu label="#{msg.racuni}">
+                                <p:menuitem value="#{msg.noviRacun}" outcome="racun"/>
+                                <p:menuitem value="#{msg.radSaRacunima}" outcome="racuni"/>
+                            </p:submenu>
+                            <p:submenu label="#{msg.pomoc}">
+                                <p:menuitem value="#{msg.oAplikaciji}" url="#" onclick="PF('aboutDlg').show()" />
+                            </p:submenu>
+                        </p:menu>
+                    </h:form>
+
+
+                    <div id="language">
+                        <h:form>
+                            <p:outputLabel value="#{msg.jezik}: "/>
+                            <h:selectOneMenu value="#{kontrolerJezika.localeCode}" onchange="submit()" valueChangeListener="#{kontrolerJezika.countryLocaleCodeChanged}">
+                                <f:selectItems value="#{kontrolerJezika.countriesInMap}" />
+                            </h:selectOneMenu>
+                        </h:form>
+                    </div>
+
+                </p:layoutUnit>
+
+                <p:layoutUnit position="center" gutter="0">
+                    <div id="content">
+                        <h3><ui:insert name="pageTitle"/></h3>
+                        <ui:insert name="content">My Screen Content Goes Here</ui:insert>
+                    </div>
+                </p:layoutUnit>
+
+            </p:layout>
+
+            <p:dialog header="#{msg.oAplikaciji}" widgetVar="aboutDlg" modal="true">
+                <p:panelGrid columns="1" styleClass="ui-panelgrid-blank">
+                    <h:outputText value="#{msg.aplikacija}: #{msg.prodavnica} v1"/>
+                    <h:outputText value="#{msg.autor}: Elizabeta Misinović"/>
+                    <h:outputText value="#{msg.predmet}: Napredne Java tehnologije"/>
+                    <h:outputText value="#{msg.datum}: 2017"/>
+                </p:panelGrid>
+            </p:dialog>
+        </h:body>
+    </f:view>
+
+</html>
+
