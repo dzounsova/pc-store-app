@@ -23,7 +23,7 @@ import javax.faces.event.ValueChangeEvent;
 public class KontrolerJezika implements Serializable {
 
     //Creating new Local for Serbian language "sr" and setting it to application default
-    private static Locale SERBIAN = new Locale("sr");
+    private static final Locale SERBIAN = new Locale("sr");
     private String localeCode = SERBIAN.toString();
 
     private static Map<String, Object> countries;
