@@ -15,7 +15,7 @@
         <h:form id="komponenta">
             <p:panelGrid columns="2" styleClass="ui-panelgrid-blank">
                 <p:outputLabel for="tip" value="#{msg.tip}: "/>
-                <p:selectOneMenu id="tip" value="#{kontrolerObradeKomponenti.komponenta.tip}" converter="konverterTipa" required="true" requiredMessage="Morate izabrati tip komponente.">
+                <p:selectOneMenu id="tip" value="#{kontrolerObradeKomponenti.komponenta.tip}" converter="#{konverterTipa}" required="true" requiredMessage="Morate izabrati tip komponente.">
                     <f:selectItems value="#{kontrolerObradeKomponenti.tipovi}" var="tip" itemValue="#{tip}" itemLabel="#{tip.naziv}"/>
                 </p:selectOneMenu> 
 

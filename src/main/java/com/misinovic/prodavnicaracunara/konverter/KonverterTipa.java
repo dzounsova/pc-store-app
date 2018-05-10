@@ -5,29 +5,36 @@
  */
 package com.misinovic.prodavnicaracunara.konverter;
 
-import com.misinovic.prodavnicaracunara.dao.TipKomponenteDaoLocal;
 import com.misinovic.prodavnicaracunara.domen.TipKomponente;
+import com.misinovic.prodavnicaracunara.kontroler.KontrolerObradeKomponenti;
+import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
  * @author Misinovic
  */
-@FacesConverter(value = "konverterTipa")
-public class KonverterTipa implements Converter{
-    
+@Named
+@ApplicationScoped
+public class KonverterTipa implements Converter {
+
     @Inject
-    TipKomponenteDaoLocal tipKomponenteDao;
-    
+    KontrolerObradeKomponenti kontrolerObradeKomponenti;
+
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
         if (string != null && !string.isEmpty()) {
-            TipKomponente tip = tipKomponenteDao.ucitajTip(Integer.parseInt(string));
-            return tip;
+            List<TipKomponente> tipovi = kontrolerObradeKomponenti.getTipovi();
+            for (TipKomponente tip : tipovi) {
+                if (tip.getId() == Integer.parseInt(string)) {
+                    return tip;
+                }
+            }
         }
         return null;
     }
