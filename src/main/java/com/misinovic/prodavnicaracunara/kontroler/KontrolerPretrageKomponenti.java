@@ -13,6 +13,8 @@ import com.misinovic.prodavnicaracunara.utils.FacesUtils;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
@@ -27,6 +29,8 @@ import javax.inject.Inject;
 @ViewScoped
 public class KontrolerPretrageKomponenti implements Serializable {
 
+    private static final Logger LOG = Logger.getLogger(KontrolerPretrageKomponenti.class.getName());
+    
     @Inject
     private TipKomponenteBO tipKomponenteBO;
 
@@ -87,6 +91,7 @@ public class KontrolerPretrageKomponenti implements Serializable {
                 komponente.remove(komponenta);
                 FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "komponentaObrisana");
             } catch (Exception e) {
+                LOG.log(Level.SEVERE, e.getMessage());
                 FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaNijeObrisana");
             }
         } else {

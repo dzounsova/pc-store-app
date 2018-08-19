@@ -86,6 +86,7 @@ public class KontrolerObradeKomponenti implements Serializable {
                 FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "komponentaIzmenjena");
                 FacesUtils.redirect("komponente.xhtml");
             } catch (IOException e) {
+                LOG.log(Level.SEVERE, e.getMessage());
                 FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaNijeIzmenjena");
                 FacesUtils.redirect("komponenta.xhtml");
             }
@@ -94,11 +95,11 @@ public class KontrolerObradeKomponenti implements Serializable {
                 komponentaBO.zapamtiKomponentu(komponenta);
                 FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "komponentaZapamcena");
             } catch (NonUniqueResourceException nure) {
-                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaVecPostoji");
                 LOG.log(Level.SEVERE, nure.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaVecPostoji");                
             } catch (Exception e) {
-                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaNijeZapamcena");
                 LOG.log(Level.SEVERE, e.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaNijeZapamcena");                
             }
             FacesUtils.redirect("komponenta.xhtml");
         }
