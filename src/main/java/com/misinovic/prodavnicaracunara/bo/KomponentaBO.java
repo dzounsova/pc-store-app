@@ -7,9 +7,11 @@ package com.misinovic.prodavnicaracunara.bo;
 
 import com.misinovic.prodavnicaracunara.dao.KomponentaDaoLocal;
 import com.misinovic.prodavnicaracunara.domen.Komponenta;
+import com.misinovic.prodavnicaracunara.exception.NonUniqueResourceException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 
 /**
  *
@@ -25,8 +27,13 @@ public class KomponentaBO {
         komponentaDao.izmeniKomponentu(komponenta);
     }
 
-    public void zapamtiKomponentu(Komponenta komponenta) {
-        komponentaDao.zapamtiKomponentu(komponenta);
+    public void zapamtiKomponentu(Komponenta komponenta) throws NonUniqueResourceException {
+        try {
+            Komponenta k = komponentaDao.ucitajKomponentu(komponenta);
+            throw new NonUniqueResourceException(k);
+        } catch (NoResultException nre) {
+            komponentaDao.zapamtiKomponentu(komponenta);
+        }
     }
 
     public void obrisiKomponentu(Komponenta komponenta) {

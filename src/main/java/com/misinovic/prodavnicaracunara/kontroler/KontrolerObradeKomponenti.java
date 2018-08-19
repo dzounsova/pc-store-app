@@ -9,12 +9,13 @@ import com.misinovic.prodavnicaracunara.bo.KomponentaBO;
 import com.misinovic.prodavnicaracunara.bo.TipKomponenteBO;
 import com.misinovic.prodavnicaracunara.domen.Komponenta;
 import com.misinovic.prodavnicaracunara.domen.TipKomponente;
+import com.misinovic.prodavnicaracunara.exception.NonUniqueResourceException;
+import com.misinovic.prodavnicaracunara.utils.FacesUtils;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -43,36 +44,22 @@ public class KontrolerObradeKomponenti implements Serializable {
     @PostConstruct
     public void init() {
         inicijalizujTipove();
-        inicijalizujKomponentu();
+        odrediRezim();
     }
 
     public void inicijalizujTipove() {
         tipovi = tipKomponenteBO.ucitajTipove();
     }
 
-    public void inicijalizujKomponentu() {
-        preuzmiParametar();
+    // Stranica moze imati dva rezima: unos ili izmenu komponente
+    public void odrediRezim() {
+        komponenta = (Komponenta) FacesUtils.getParameterFromSessionMap("komponenta");
         if (komponenta != null) {
             edit = true;
-            ukloniParametar();
+            FacesUtils.removeParameterFromSessionMap("komponenta");
         } else {
             edit = false;
             komponenta = new Komponenta();
-        }
-    }
-
-    public void preuzmiParametar() {
-        komponenta = (Komponenta) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("komponenta");
-    }
-
-    public void ukloniParametar() {
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove("komponenta");
-    }
-
-    public void ucitajPocetnuPoruku() {
-        if (edit && komponenta != null) {
-            ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("komponentaPronadjena")));
         }
     }
 
@@ -88,25 +75,26 @@ public class KontrolerObradeKomponenti implements Serializable {
         return edit;
     }
 
-    public String zapamtiKomponentu() {
-        ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+    public void zapamtiKomponentu() throws IOException {
         if (edit) {
             try {
                 komponentaBO.izmeniKomponentu(komponenta);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("komponentaIzmenjena")));
-                return "komponente";
-            } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), bundle.getString("komponentaNijeIzmenjena")));
-                return "komponenta";
+                FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "komponentaIzmenjena");
+                FacesUtils.redirect("komponente.xhtml");
+            } catch (IOException e) {
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaNijeIzmenjena");
+                FacesUtils.redirect("komponenta.xhtml");
             }
         } else {
             try {
                 komponentaBO.zapamtiKomponentu(komponenta);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("komponentaZapamcena")));
+                FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "komponentaZapamcena");
+            } catch (NonUniqueResourceException nure) {
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaVecPostoji");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), bundle.getString("komponentaNijeZapamcena")));
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaNijeZapamcena");
             }
-            return "komponenta";
+            FacesUtils.redirect("komponenta.xhtml");
         }
     }
 }

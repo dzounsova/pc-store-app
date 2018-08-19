@@ -11,6 +11,18 @@
     <context-param>
         <param-name>primefaces.FONT_AWESOME</param-name>
         <param-value>true</param-value>
+    </context-param>  
+    <context-param>
+        <param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <!-- UI Layout Initialization Error. The center-pane element does not exist.
+    Bug reported for PF: https://github.com/primefaces/primefaces/issues/3457
+    Fix: https://github.com/primefaces/primefaces/issues/3457#issuecomment-373004776
+    -->
+    <context-param>
+        <param-name>primefaces.MOVE_SCRIPTS_TO_BOTTOM</param-name>
+        <param-value>true</param-value>
     </context-param>
     <mime-mapping> 
         <extension>eot</extension> 

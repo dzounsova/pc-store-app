@@ -16,12 +16,12 @@
         </h:head>
 
         <h:body>
+            <h:form>
+                <p:growl id="growl" showDetail="true" globalOnly="true" sticky="true">
+                    <p:autoUpdate />
+                </p:growl>
+            </h:form>
             <p:layout fullPage="true" >
-
-                <h:form>
-                    <p:growl id="growl" autoUpdate="true" showDetail="true" globalOnly="true"/>
-                </h:form>
-
                 <p:layoutUnit position="north" size="55" resizable="true" closable="true" collapsible="true" gutter="0">
                 </p:layoutUnit>
 
@@ -66,7 +66,6 @@
                         </p:menu>
                     </h:form>
 
-
                     <div id="language">
                         <h:form>
                             <p:outputLabel value="#{msg.jezik}: "/>
@@ -75,7 +74,6 @@
                             </h:selectOneMenu>
                         </h:form>
                     </div>
-
                 </p:layoutUnit>
 
                 <p:layoutUnit position="center" gutter="0">
@@ -84,7 +82,6 @@
                         <ui:insert name="content">My Screen Content Goes Here</ui:insert>
                     </div>
                 </p:layoutUnit>
-
             </p:layout>
 
             <p:dialog header="#{msg.oAplikaciji}" widgetVar="aboutDlg" modal="true">
@@ -97,6 +94,5 @@
             </p:dialog>
         </h:body>
     </f:view>
-
 </html>
 

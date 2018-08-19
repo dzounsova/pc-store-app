@@ -9,9 +9,6 @@
     <ui:define name="title">#{msg.komponenta}</ui:define>
     <ui:define name="pageTitle">#{kontrolerObradeKomponenti.edit ? msg.izmenaKomponente : msg.novaKomponenta}</ui:define>
     <ui:define name ="content">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{kontrolerObradeKomponenti.ucitajPocetnuPoruku()}" />
-        </f:metadata>
         <h:form id="komponenta">
             <p:panelGrid columns="2" styleClass="ui-panelgrid-blank">
                 <p:outputLabel for="tip" value="#{msg.tip}: "/>

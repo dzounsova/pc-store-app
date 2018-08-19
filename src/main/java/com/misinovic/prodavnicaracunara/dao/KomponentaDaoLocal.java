@@ -9,6 +9,7 @@ import com.misinovic.prodavnicaracunara.domen.Komponenta;
 import com.misinovic.prodavnicaracunara.domen.Ugradnja;
 import java.util.List;
 import javax.ejb.Local;
+import javax.persistence.NoResultException;
 
 /**
  *
@@ -19,6 +20,8 @@ public interface KomponentaDaoLocal {
 
     public Komponenta ucitajKomponentu(int id);
 
+    public Komponenta ucitajKomponentu(Komponenta komponenta) throws NoResultException;
+
     public List<Komponenta> ucitajKomponente();
 
     public void zapamtiKomponentu(Komponenta komponenta);
@@ -26,6 +29,6 @@ public interface KomponentaDaoLocal {
     public void izmeniKomponentu(Komponenta komponenta);
 
     public void obrisiKomponentu(Komponenta komponenta);
-    
+
     public void smanjiKolicinu(Ugradnja ugradnja);
 }

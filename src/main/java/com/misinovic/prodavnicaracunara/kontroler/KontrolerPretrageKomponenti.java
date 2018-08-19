@@ -9,12 +9,12 @@ import com.misinovic.prodavnicaracunara.bo.KomponentaBO;
 import com.misinovic.prodavnicaracunara.bo.TipKomponenteBO;
 import com.misinovic.prodavnicaracunara.domen.Komponenta;
 import com.misinovic.prodavnicaracunara.domen.TipKomponente;
+import com.misinovic.prodavnicaracunara.utils.FacesUtils;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -62,41 +62,35 @@ public class KontrolerPretrageKomponenti implements Serializable {
         return tipovi;
     }
 
+    // Ukoliko komponenta nije izabrana onemoguci izmenu, brisanje i detalje.
     public boolean disableButtons() {
-        if (komponenta == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return komponenta == null;
     }
 
-    public String ucitajFormuZaIzmenuKomponente() {
+    public void ucitajFormuZaIzmenuKomponente() throws IOException {
         if (komponenta != null) {
-            postaviParametar();
-            return "komponenta";
+            FacesUtils.putParameterIntoSessionMap("komponenta", komponenta);
+            FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info",
+                    "komponentaPronadjena");
+            FacesUtils.redirect("komponenta.xhtml");
         } else {
-            ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, bundle.getString("upozorenje"), bundle.getString("komponentaNijeIzabrana")));
-            return null;
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje",
+                    "komponentaNijeIzabrana");
         }
-    }
-
-    public void postaviParametar() {
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put("komponenta", komponenta);
     }
 
     public void obrisiKomponentu() {
-        ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         if (komponenta != null) {
             try {
                 komponentaBO.obrisiKomponentu(komponenta);
+                //brisanje komponente iz liste komponenti kako bi imali azurne podatke bez dodatnog request-a
                 komponente.remove(komponenta);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("komponentaObrisana")));
+                FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "komponentaObrisana");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), bundle.getString("komponentaNijeObrisana")));
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaNijeObrisana");
             }
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, bundle.getString("upozorenje"), bundle.getString("komponentaNijeIzabrana")));
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "komponentaNijeIzabrana");
         }
     }
 

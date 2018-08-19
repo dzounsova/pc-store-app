@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.validation.ConstraintViolation;
@@ -40,10 +41,29 @@ public class KomponentaDao implements KomponentaDaoLocal {
         return em.find(Komponenta.class, id);
     }
 
+    /**
+     * Ucitaj komponentu sa parametrima koji cine njen business key (tip, proizvodjac, naziv)
+     *
+     * @param komponenta Objekat komponente sa podesenim business key parametrima
+     * @return Ucitana komponenta
+     * @throws NoResultException Ukoliko ne postoji komponenta sa zadatim parametrima
+     */
+    @Override
+    public Komponenta ucitajKomponentu(Komponenta komponenta) throws NoResultException {
+        log.log(Level.INFO, "ucitajKomponentu: {0} - {1} - {2}", new String[]{komponenta.getTip().getNaziv(),
+            komponenta.getProizvodjac(), komponenta.getNaziv()});
+        Komponenta k = (Komponenta) em.createNamedQuery(Komponenta.NamedQuery.findByComparableAttributes)//
+                .setParameter("tip", komponenta.getTip())//
+                .setParameter("proizvodjac", komponenta.getProizvodjac())//
+                .setParameter("naziv", komponenta.getNaziv())//
+                .getSingleResult();
+        return k;
+    }
+
     @Override
     public List<Komponenta> ucitajKomponente() {
-        List<Komponenta> lista = em.createNamedQuery(Komponenta.NamedQuery.findAll).getResultList();
-        return lista;
+        List<Komponenta> komponente = em.createNamedQuery(Komponenta.NamedQuery.findAll).getResultList();
+        return komponente;
     }
 
     @Override
@@ -67,7 +87,9 @@ public class KomponentaDao implements KomponentaDaoLocal {
     @Override
     public void smanjiKolicinu(Ugradnja ugradnja) {
         log.log(Level.INFO, "smanjiKolicinu: komponenta = {0}, kolicina = {1}", new Object[]{ugradnja.getKomponenta().getId(), ugradnja.getKolicina() * ugradnja.getRacunar().getKolicinaNaZalihi()});
-        Query q = em.createNamedQuery(Komponenta.NamedQuery.smanjiKolicinu).setParameter("kolicina", ugradnja.getKolicina() * ugradnja.getRacunar().getKolicinaNaZalihi()).setParameter("id", ugradnja.getKomponenta().getId());
+        Query q = em.createNamedQuery(Komponenta.NamedQuery.smanjiKolicinu)//
+                .setParameter("kolicina", ugradnja.getKolicina() * ugradnja.getRacunar().getKolicinaNaZalihi())//
+                .setParameter("id", ugradnja.getKomponenta().getId());
         q.executeUpdate();
         Komponenta k = ucitajKomponentu(ugradnja.getKomponenta().getId());
         Set<ConstraintViolation<Komponenta>> violations = validator.validate(k);
@@ -76,5 +98,4 @@ public class KomponentaDao implements KomponentaDaoLocal {
             em.getTransaction().rollback();
         }
     }
-
 }
