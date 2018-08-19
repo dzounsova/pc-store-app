@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ejb-jar>
+    <interceptors>
+        <interceptor>
+            <interceptor-class>com.misinovic.prodavnicaracunara.exception.ExceptionInterceptor</interceptor-class>
+        </interceptor>
+    </interceptors>
+    <assembly-descriptor>
+        <interceptor-binding>
+            <ejb-name>*</ejb-name>
+            <interceptor-class>com.misinovic.prodavnicaracunara.exception.ExceptionInterceptor</interceptor-class>
+        </interceptor-binding>
+    </assembly-descriptor>
+</ejb-jar>

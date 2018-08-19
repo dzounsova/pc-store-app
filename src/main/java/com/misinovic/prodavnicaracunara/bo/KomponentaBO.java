@@ -7,11 +7,11 @@ package com.misinovic.prodavnicaracunara.bo;
 
 import com.misinovic.prodavnicaracunara.dao.KomponentaDaoLocal;
 import com.misinovic.prodavnicaracunara.domen.Komponenta;
+import com.misinovic.prodavnicaracunara.exception.NoResultException;
 import com.misinovic.prodavnicaracunara.exception.NonUniqueResourceException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 
 /**
  *
