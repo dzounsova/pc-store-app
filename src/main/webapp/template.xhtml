@@ -26,6 +26,13 @@
                 </p:layoutUnit>
 
                 <p:layoutUnit position="south" size="55" closable="true" collapsible="true" gutter="0">
+                    <div id="language">
+                        <h:form>
+                            <p:selectOneMenu id="language" value="#{kontrolerJezika.localeCode}" onchange="submit()" valueChangeListener="#{kontrolerJezika.countryLocaleCodeChanged}">
+                                <f:selectItems value="#{kontrolerJezika.countriesInMap}" />                                
+                            </p:selectOneMenu>
+                        </h:form>
+                    </div>
                 </p:layoutUnit>
 
                 <p:layoutUnit position="west" size="253" header="#{msg.prodavnica}" collapsible="true" gutter="0">
@@ -65,15 +72,6 @@
                             </p:submenu>
                         </p:menu>
                     </h:form>
-
-                    <div id="language">
-                        <h:form>
-                            <p:outputLabel value="#{msg.jezik}: "/>
-                            <h:selectOneMenu value="#{kontrolerJezika.localeCode}" onchange="submit()" valueChangeListener="#{kontrolerJezika.countryLocaleCodeChanged}">
-                                <f:selectItems value="#{kontrolerJezika.countriesInMap}" />
-                            </h:selectOneMenu>
-                        </h:form>
-                    </div>
                 </p:layoutUnit>
 
                 <p:layoutUnit position="center" gutter="0">

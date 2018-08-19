@@ -37,7 +37,7 @@ public class KomponentaDao implements KomponentaDaoLocal {
 
     @Override
     public Komponenta ucitajKomponentu(int id) {
-        LOG.log(Level.INFO, "ucitajKomponentu: ", id);
+        LOG.log(Level.INFO, "ucitajKomponentu: {0}", id);
         return em.find(Komponenta.class, id);
     }
 
@@ -62,6 +62,7 @@ public class KomponentaDao implements KomponentaDaoLocal {
 
     @Override
     public List<Komponenta> ucitajKomponente() {
+        LOG.log(Level.INFO, "ucitajKomponente");
         List<Komponenta> komponente = em.createNamedQuery(Komponenta.NamedQuery.findAll).getResultList();
         return komponente;
     }
@@ -74,13 +75,13 @@ public class KomponentaDao implements KomponentaDaoLocal {
 
     @Override
     public void izmeniKomponentu(Komponenta komponenta) {
-        LOG.log(Level.INFO, "izmeniKomponentu: ", komponenta.getId());
+        LOG.log(Level.INFO, "izmeniKomponentu: {0}", komponenta.getId());
         em.merge(komponenta);
     }
 
     @Override
     public void obrisiKomponentu(Komponenta komponenta) {
-        LOG.log(Level.INFO, "obrisiKomponentu: ", komponenta.getId());
+        LOG.log(Level.INFO, "obrisiKomponentu: {0}", komponenta.getId());
         em.remove(em.merge(komponenta));
     }
 

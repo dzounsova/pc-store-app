@@ -32,10 +32,9 @@
             </div>
             <div id="language">
                 <h:form>
-                    <p:outputLabel value="#{msg.jezik}: "/>
-                    <h:selectOneMenu value="#{kontrolerJezika.localeCode}" onchange="submit()" valueChangeListener="#{kontrolerJezika.countryLocaleCodeChanged}">
-                        <f:selectItems value="#{kontrolerJezika.countriesInMap}" />
-                    </h:selectOneMenu>
+                    <p:selectOneMenu id="language" value="#{kontrolerJezika.localeCode}" onchange="submit()" valueChangeListener="#{kontrolerJezika.countryLocaleCodeChanged}">
+                        <f:selectItems value="#{kontrolerJezika.countriesInMap}" />                                
+                    </p:selectOneMenu>
                 </h:form>
             </div>
         </h:body>
