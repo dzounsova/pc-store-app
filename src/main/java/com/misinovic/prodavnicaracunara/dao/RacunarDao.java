@@ -6,7 +6,6 @@
 package com.misinovic.prodavnicaracunara.dao;
 
 import com.misinovic.prodavnicaracunara.domen.Racunar;
-import com.misinovic.prodavnicaracunara.domen.RacunarKomponenta;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +20,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class RacunarDao implements RacunarDaoLocal {
 
-    private static final Logger log = Logger.getLogger(RacunarDao.class.getName());
+    private static final Logger LOG = Logger.getLogger(RacunarDao.class.getName());
 
     @PersistenceContext(unitName = "ProdavnicaRacunaraPU")
     private EntityManager em;
@@ -39,19 +38,19 @@ public class RacunarDao implements RacunarDaoLocal {
 
     @Override
     public void zapamtiRacunar(Racunar racunar) {
-        log.log(Level.INFO, "zapamtiRacunar");
+        LOG.log(Level.INFO, "zapamtiRacunar");
         em.persist(racunar);
     }
 
     @Override
     public void izmeniRacunar(Racunar racunar) {
-        log.log(Level.INFO, "izmeniRacunar: ", racunar.getId());
+        LOG.log(Level.INFO, "izmeniRacunar: ", racunar.getId());
         em.merge(racunar);
     }
 
     @Override
     public void obrisiRacunar(Racunar racunar) {
-        log.log(Level.INFO, "obrisiRacunar: ", racunar.getId());
+        LOG.log(Level.INFO, "obrisiRacunar: ", racunar.getId());
         em.remove(em.merge(racunar));
     }
 

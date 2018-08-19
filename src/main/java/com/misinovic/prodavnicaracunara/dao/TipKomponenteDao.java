@@ -20,7 +20,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class TipKomponenteDao implements TipKomponenteDaoLocal {
 
-    private static final Logger log = Logger.getLogger(TipKomponenteDao.class.getName());
+    private static final Logger LOG = Logger.getLogger(TipKomponenteDao.class.getName());
 
     @PersistenceContext(unitName = "ProdavnicaRacunaraPU")
     private EntityManager em;
@@ -32,7 +32,7 @@ public class TipKomponenteDao implements TipKomponenteDaoLocal {
 
     @Override
     public TipKomponente ucitajTip(int id) {
-        log.log(Level.INFO, "ucitajTip: ", id);
+        LOG.log(Level.INFO, "ucitajTip: ", id);
         return em.find(TipKomponente.class, id);
     }
 }

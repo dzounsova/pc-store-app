@@ -26,7 +26,7 @@ import javax.validation.Validator;
 @Stateless
 public class RacunarKomponentaDao implements RacunarKomponentaDaoLocal {
 
-    private static final Logger log = Logger.getLogger(RacunarKomponentaDao.class.getName());
+    private static final Logger LOG = Logger.getLogger(RacunarKomponentaDao.class.getName());
 
     @PersistenceContext(unitName = "ProdavnicaRacunaraPU")
     private EntityManager em;
@@ -36,7 +36,7 @@ public class RacunarKomponentaDao implements RacunarKomponentaDaoLocal {
 
     @Override
     public RacunarKomponenta ucitajRacunarIliKomponentu(int id) {
-        log.log(Level.INFO, "ucitajRacunarIliKomponentu: ", id);
+        LOG.log(Level.INFO, "ucitajRacunarIliKomponentu: ", id);
         return em.find(RacunarKomponenta.class, id);
     }
 
@@ -48,13 +48,13 @@ public class RacunarKomponentaDao implements RacunarKomponentaDaoLocal {
 
     @Override
     public void smanjiKolicinu(StavkaRacuna stavka) {
-        log.log(Level.INFO, "smanjiKolicinu: racunar/komponenta = {0}, kolicina = {1}", new Object[]{stavka.getRacunarKomponenta().getId(), stavka.getKolicina()});
+        LOG.log(Level.INFO, "smanjiKolicinu: racunar/komponenta = {0}, kolicina = {1}", new Object[]{stavka.getRacunarKomponenta().getId(), stavka.getKolicina()});
         Query q = em.createNamedQuery(RacunarKomponenta.NamedQuery.smanjiKolicinu).setParameter("kolicina", stavka.getKolicina()).setParameter("id", stavka.getRacunarKomponenta().getId());
         q.executeUpdate();
         RacunarKomponenta rk = ucitajRacunarIliKomponentu(stavka.getRacunarKomponenta().getId());
         Set<ConstraintViolation<RacunarKomponenta>> violations = validator.validate(rk);
         if (violations.size() > 0) {
-            log.log(Level.INFO, "smanjiKolicinu: Constraint violation");
+            LOG.log(Level.INFO, "smanjiKolicinu: Constraint violation");
             em.getTransaction().rollback();
         }
     }

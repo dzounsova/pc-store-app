@@ -14,6 +14,8 @@ import com.misinovic.prodavnicaracunara.utils.FacesUtils;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
@@ -27,6 +29,8 @@ import javax.inject.Inject;
 @Named(value = "kontrolerObradeKomponenti")
 @ViewScoped
 public class KontrolerObradeKomponenti implements Serializable {
+    
+    private static final Logger LOG = Logger.getLogger(KontrolerObradeKomponenti.class.getName());
 
     @Inject
     TipKomponenteBO tipKomponenteBO;
@@ -91,8 +95,10 @@ public class KontrolerObradeKomponenti implements Serializable {
                 FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "komponentaZapamcena");
             } catch (NonUniqueResourceException nure) {
                 FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaVecPostoji");
+                LOG.log(Level.SEVERE, nure.getMessage());
             } catch (Exception e) {
                 FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "komponentaNijeZapamcena");
+                LOG.log(Level.SEVERE, e.getMessage());
             }
             FacesUtils.redirect("komponenta.xhtml");
         }

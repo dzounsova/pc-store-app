@@ -5,7 +5,6 @@
  */
 package com.misinovic.prodavnicaracunara.dao;
 
-import com.misinovic.prodavnicaracunara.domen.Komponenta;
 import com.misinovic.prodavnicaracunara.domen.Racun;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,7 +20,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class RacunDao implements RacunDaoLocal {
 
-    private static final Logger log = Logger.getLogger(RacunDao.class.getName());
+    private static final Logger LOG = Logger.getLogger(RacunDao.class.getName());
 
     @PersistenceContext(unitName = "ProdavnicaRacunaraPU")
     private EntityManager em;
@@ -34,13 +33,13 @@ public class RacunDao implements RacunDaoLocal {
 
     @Override
     public void zapamtiRacun(Racun racun) {
-        log.log(Level.INFO, "zapamtiRacun");
+        LOG.log(Level.INFO, "zapamtiRacun");
         em.persist(racun);
     }
 
     @Override
     public void obrisiRacun(Racun racun) {
-        log.log(Level.INFO, "obrisiRacun: ", racun.getId());
+        LOG.log(Level.INFO, "obrisiRacun: ", racun.getId());
         em.remove(em.merge(racun));
     }
 

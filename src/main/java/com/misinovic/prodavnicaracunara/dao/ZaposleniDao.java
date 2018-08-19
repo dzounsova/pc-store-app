@@ -20,14 +20,14 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class ZaposleniDao implements ZaposleniDaoLocal {
 
-    private static final Logger log = Logger.getLogger(ZaposleniDao.class.getName());
+    private static final Logger LOG = Logger.getLogger(ZaposleniDao.class.getName());
 
     @PersistenceContext(unitName = "ProdavnicaRacunaraPU")
     private EntityManager em;
 
     @Override
     public Zaposleni ucitajZaposlenog(Integer id) {
-        log.log(Level.INFO, "ucitajZaposlenog: ", id);
+        LOG.log(Level.INFO, "ucitajZaposlenog: ", id);
         return em.find(Zaposleni.class, id);
     }
 

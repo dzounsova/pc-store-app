@@ -27,7 +27,7 @@ import javax.validation.Validator;
 @Stateless
 public class KomponentaDao implements KomponentaDaoLocal {
 
-    private static final Logger log = Logger.getLogger(KomponentaDao.class.getName());
+    private static final Logger LOG = Logger.getLogger(KomponentaDao.class.getName());
 
     @PersistenceContext(unitName = "ProdavnicaRacunaraPU")
     private EntityManager em;
@@ -37,7 +37,7 @@ public class KomponentaDao implements KomponentaDaoLocal {
 
     @Override
     public Komponenta ucitajKomponentu(int id) {
-        log.log(Level.INFO, "ucitajKomponentu: ", id);
+        LOG.log(Level.INFO, "ucitajKomponentu: ", id);
         return em.find(Komponenta.class, id);
     }
 
@@ -50,7 +50,7 @@ public class KomponentaDao implements KomponentaDaoLocal {
      */
     @Override
     public Komponenta ucitajKomponentu(Komponenta komponenta) throws NoResultException {
-        log.log(Level.INFO, "ucitajKomponentu: {0} - {1} - {2}", new String[]{komponenta.getTip().getNaziv(),
+        LOG.log(Level.INFO, "ucitajKomponentu: {0} - {1} - {2}", new String[]{komponenta.getTip().getNaziv(),
             komponenta.getProizvodjac(), komponenta.getNaziv()});
         Komponenta k = (Komponenta) em.createNamedQuery(Komponenta.NamedQuery.findByComparableAttributes)//
                 .setParameter("tip", komponenta.getTip())//
@@ -68,25 +68,25 @@ public class KomponentaDao implements KomponentaDaoLocal {
 
     @Override
     public void zapamtiKomponentu(Komponenta komponenta) {
-        log.log(Level.INFO, "zapamtiKomponentu");
+        LOG.log(Level.INFO, "zapamtiKomponentu");
         em.persist(komponenta);
     }
 
     @Override
     public void izmeniKomponentu(Komponenta komponenta) {
-        log.log(Level.INFO, "izmeniKomponentu: ", komponenta.getId());
+        LOG.log(Level.INFO, "izmeniKomponentu: ", komponenta.getId());
         em.merge(komponenta);
     }
 
     @Override
     public void obrisiKomponentu(Komponenta komponenta) {
-        log.log(Level.INFO, "obrisiKomponentu: ", komponenta.getId());
+        LOG.log(Level.INFO, "obrisiKomponentu: ", komponenta.getId());
         em.remove(em.merge(komponenta));
     }
 
     @Override
     public void smanjiKolicinu(Ugradnja ugradnja) {
-        log.log(Level.INFO, "smanjiKolicinu: komponenta = {0}, kolicina = {1}", new Object[]{ugradnja.getKomponenta().getId(), ugradnja.getKolicina() * ugradnja.getRacunar().getKolicinaNaZalihi()});
+        LOG.log(Level.INFO, "smanjiKolicinu: komponenta = {0}, kolicina = {1}", new Object[]{ugradnja.getKomponenta().getId(), ugradnja.getKolicina() * ugradnja.getRacunar().getKolicinaNaZalihi()});
         Query q = em.createNamedQuery(Komponenta.NamedQuery.smanjiKolicinu)//
                 .setParameter("kolicina", ugradnja.getKolicina() * ugradnja.getRacunar().getKolicinaNaZalihi())//
                 .setParameter("id", ugradnja.getKomponenta().getId());
@@ -94,7 +94,7 @@ public class KomponentaDao implements KomponentaDaoLocal {
         Komponenta k = ucitajKomponentu(ugradnja.getKomponenta().getId());
         Set<ConstraintViolation<Komponenta>> violations = validator.validate(k);
         if (violations.size() > 0) {
-            log.log(Level.INFO, "smanjiKolicinu: Constraint violation");
+            LOG.log(Level.INFO, "smanjiKolicinu: Constraint violation");
             em.getTransaction().rollback();
         }
     }
