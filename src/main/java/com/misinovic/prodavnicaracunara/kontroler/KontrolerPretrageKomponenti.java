@@ -30,7 +30,7 @@ import javax.inject.Inject;
 public class KontrolerPretrageKomponenti implements Serializable {
 
     private static final Logger LOG = Logger.getLogger(KontrolerPretrageKomponenti.class.getName());
-    
+
     @Inject
     private TipKomponenteBO tipKomponenteBO;
 
@@ -66,7 +66,11 @@ public class KontrolerPretrageKomponenti implements Serializable {
         return tipovi;
     }
 
-    // Ukoliko komponenta nije izabrana onemoguci izmenu, brisanje i detalje.
+    /**
+     * Onemoguci izmenu, brisanje i detalje.
+     *
+     * @return true ukoliko komponenta nije izabrana
+     */
     public boolean disableButtons() {
         return komponenta == null;
     }
@@ -74,12 +78,10 @@ public class KontrolerPretrageKomponenti implements Serializable {
     public void ucitajFormuZaIzmenuKomponente() throws IOException {
         if (komponenta != null) {
             FacesUtils.putParameterIntoSessionMap("komponenta", komponenta);
-            FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info",
-                    "komponentaPronadjena");
+            FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "komponentaPronadjena");
             FacesUtils.redirect("komponenta.xhtml");
         } else {
-            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje",
-                    "komponentaNijeIzabrana");
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "komponentaNijeIzabrana");
         }
     }
 
@@ -87,7 +89,7 @@ public class KontrolerPretrageKomponenti implements Serializable {
         if (komponenta != null) {
             try {
                 komponentaBO.obrisiKomponentu(komponenta);
-                //brisanje komponente iz liste komponenti kako bi imali azurne podatke bez dodatnog request-a
+                // Brisanje komponente iz liste komponenti kako bi imali azurne podatke bez dodatnog request-a
                 komponente.remove(komponenta);
                 FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "komponentaObrisana");
             } catch (Exception e) {

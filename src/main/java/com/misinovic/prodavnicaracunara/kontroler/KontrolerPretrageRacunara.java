@@ -7,12 +7,14 @@ package com.misinovic.prodavnicaracunara.kontroler;
 
 import com.misinovic.prodavnicaracunara.bo.RacunarBO;
 import com.misinovic.prodavnicaracunara.domen.Racunar;
+import com.misinovic.prodavnicaracunara.utils.FacesUtils;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,6 +26,8 @@ import javax.inject.Named;
 @Named
 @ViewScoped
 public class KontrolerPretrageRacunara implements Serializable {
+
+    private static final Logger LOG = Logger.getLogger(KontrolerPretrageRacunara.class.getName());
 
     @Inject
     private RacunarBO racunarBO;
@@ -51,41 +55,38 @@ public class KontrolerPretrageRacunara implements Serializable {
         return racunari;
     }
 
+    /**
+     * Onemoguci izmenu, brisanje i detalje.
+     *
+     * @return true ukoliko racunar nije izabran
+     */
     public boolean disableButtons() {
-        if (racunar == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return racunar == null;
     }
 
-    public String ucitajFormuZaIzmenuRacunara() {
+    public void ucitajFormuZaIzmenuRacunara() throws IOException {
         if (racunar != null) {
-            postaviParametar();
-            return "racunar";
+            FacesUtils.putParameterIntoSessionMap("racunar", racunar);
+            FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "racunarPronadjen");
+            FacesUtils.redirect("racunar.xhtml");
         } else {
-            ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, bundle.getString("upozorenje"), bundle.getString("racunarNijeIzabran")));
-            return null;
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "racunarNijeIzabran");
         }
-    }
-
-    private void postaviParametar() {
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put("racunar", racunar);
     }
 
     public void obrisiRacunar() {
-        ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         if (racunar != null) {
             try {
                 racunarBO.obrisiRacunar(racunar);
+                // Brisanje racunara iz liste racunara kako bi imali azurne podatke bez dodatnog request-a
                 racunari.remove(racunar);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("racunarObrisan")));
+                FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "racunarObrisan");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), bundle.getString("racunarNijeObrisan")));
+                LOG.log(Level.SEVERE, e.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunarNijeObrisan");
             }
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, bundle.getString("upozorenje"), bundle.getString("racunarNijeIzabran")));
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "racunarNijeIzabran");
         }
     }
 

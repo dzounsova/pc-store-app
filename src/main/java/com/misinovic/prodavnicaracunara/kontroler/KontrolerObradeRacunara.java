@@ -12,10 +12,14 @@ import com.misinovic.prodavnicaracunara.domen.Komponenta;
 import com.misinovic.prodavnicaracunara.domen.Racunar;
 import com.misinovic.prodavnicaracunara.domen.TipKomponente;
 import com.misinovic.prodavnicaracunara.domen.Ugradnja;
+import com.misinovic.prodavnicaracunara.utils.FacesUtils;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -30,6 +34,8 @@ import javax.inject.Named;
 @Named(value = "kontrolerObradeRacunara")
 @ViewScoped
 public class KontrolerObradeRacunara implements Serializable {
+
+    private static final Logger LOG = Logger.getLogger(KontrolerObradeRacunara.class.getName());
 
     @Inject
     KontrolerZaposlenih kontrolerZaposlenih;
@@ -57,36 +63,29 @@ public class KontrolerObradeRacunara implements Serializable {
 
     @PostConstruct
     public void init() {
-        tipovi = tipKomponenteBO.ucitajTipove();
-        komponente = komponentaBO.ucitajKomponente();
-        inicijalizujRacunar();
+        inicijalizujTipove();
+        inicijalizujKomponente();
+        odrediRezim();
     }
 
-    public void inicijalizujRacunar() {
-        preuzmiParametar();
+    public void inicijalizujTipove() {
+        tipovi = tipKomponenteBO.ucitajTipove();
+    }
+
+    public void inicijalizujKomponente() {
+        komponente = komponentaBO.ucitajKomponente();
+    }
+
+    private void odrediRezim() {
+        racunar = (Racunar) FacesUtils.getParameterFromSessionMap("racunar");
         if (racunar != null) {
             edit = true;
             zalihaRacunara = racunar.getKolicinaNaZalihi();
-            ukloniParametar();
+            FacesUtils.removeParameterFromSessionMap("racunar");
         } else {
             edit = false;
             racunar = new Racunar();
             zalihaRacunara = 0;
-        }
-    }
-
-    public void preuzmiParametar() {
-        racunar = (Racunar) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("racunar");
-    }
-
-    public void ukloniParametar() {
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove("racunar");
-    }
-
-    public void ucitajPocetnuPoruku() {
-        if (edit && racunar != null) {
-            ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("racunarPronadjen")));
         }
     }
 
@@ -150,13 +149,13 @@ public class KontrolerObradeRacunara implements Serializable {
     }
 
     public void dodajUgradnju() {
-        Ugradnja ugradnja = new Ugradnja();
-        ugradnja.setRacunar(racunar);
-        ugradnja.setKomponenta(komponenta);
-        ugradnja.setKolicina(kolicina);
-        ugradnja.setDatumUgradnje(new Date());
+        Ugradnja u = new Ugradnja();
+        u.setRacunar(racunar);
+        u.setKomponenta(komponenta);
+        u.setKolicina(kolicina);
+        u.setDatumUgradnje(new Date());
         try {
-            racunarBO.dodajUgradnju(ugradnja);
+            racunarBO.dodajUgradnju(u);
         } catch (Exception ex) {
             ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), ex.getMessage()));
@@ -167,27 +166,28 @@ public class KontrolerObradeRacunara implements Serializable {
         racunar.getUgradnje().remove(ugradnja);
     }
 
-    public String zapamtiRacunar() {
-        ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+    public void zapamtiRacunar() throws IOException {
         if (edit) {
             try {
                 racunarBO.izmeniRacunar(racunar, zalihaRacunara);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("racunarIzmenjen")));
-                return "racunari";
-            } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), bundle.getString("racunarNijeIzmenjen")));
-                return "racunar";
+                FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "racunarIzmenjen");
+                FacesUtils.redirect("racunari.xhtml");
+            } catch (IOException e) {
+                LOG.log(Level.SEVERE, e.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunarNijeIzmenjen");
+                FacesUtils.redirect("racunar.xhtml");
             }
         } else {
             racunar.setZaposleni(kontrolerZaposlenih.getZaposleni());
             racunar.setProdajnaCena(ukupnaVrednost());
             try {
                 racunarBO.zapamtiRacunar(racunar);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("racunarZapamcen")));
+                FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "racunarZapamcen");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), bundle.getString("racunarNijeZapamcen")));
+                LOG.log(Level.SEVERE, e.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunarNijeZapamcen");
             }
-            return "racunar";
+            FacesUtils.redirect("racunar.xhtml");
         }
     }
 }
