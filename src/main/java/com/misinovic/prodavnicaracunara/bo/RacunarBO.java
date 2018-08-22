@@ -64,6 +64,7 @@ public class RacunarBO {
         return racunari;
     }
 
+    //FIXME: refactor this spaghetti
     public void dodajUgradnju(Ugradnja ugradnja) throws Exception {
         boolean contains = false;
         if (!ugradnja.getRacunar().getUgradnje().isEmpty()) {

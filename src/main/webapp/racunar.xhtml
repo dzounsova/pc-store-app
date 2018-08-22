@@ -12,8 +12,7 @@
         <h:form id="racunar">
             <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="margin-bottom: 20px;">
                 <p:outputLabel for="naziv" value="#{msg.naziv}: " />
-                <p:inputText id="naziv"  value="#{kontrolerObradeRacunara.racunar.naziv}" required="true" requiredMessage="Morate uneti naziv komponente."/>
-
+                <p:inputText id="naziv"  value="#{kontrolerObradeRacunara.racunar.naziv}" required="#{not empty param[save.clientId]}" requiredMessage="Morate uneti naziv komponente."/>
                 <p:outputLabel for ="kolicina" value="#{msg.kolicina}: " />
                 <p:spinner id="kolicina" value="#{kontrolerObradeRacunara.racunar.kolicinaNaZalihi}" min="1"/>
 
@@ -117,7 +116,7 @@
                 });
             </script>-->
             <p:panel styleClass="buttonsPanel">
-                <p:commandButton icon="fa fa-save" value="#{msg.sacuvaj}" action="#{kontrolerObradeRacunara.zapamtiRacunar()}"/>
+                <p:commandButton icon="fa fa-save" binding="#{save}" value="#{msg.sacuvaj}" action="#{kontrolerObradeRacunara.zapamtiRacunar()}"/>
             </p:panel>
         </h:form>
 
