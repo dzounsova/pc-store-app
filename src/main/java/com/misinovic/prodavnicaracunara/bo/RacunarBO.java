@@ -9,9 +9,11 @@ import com.misinovic.prodavnicaracunara.dao.KomponentaDaoLocal;
 import com.misinovic.prodavnicaracunara.dao.RacunarDaoLocal;
 import com.misinovic.prodavnicaracunara.domen.Komponenta;
 import com.misinovic.prodavnicaracunara.domen.Racunar;
+import com.misinovic.prodavnicaracunara.domen.TipKomponente;
 import com.misinovic.prodavnicaracunara.domen.Ugradnja;
-import java.util.Arrays;
+import com.misinovic.prodavnicaracunara.exception.NonUniqueResourceException;
 import java.util.List;
+import java.util.stream.IntStream;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -27,6 +29,12 @@ import javax.inject.Inject;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class RacunarBO {
 
+    /**
+     * Skup jedinstvenih tipova komponenti. Ukoliko je tip jedinstven, racunar moze imati najvise jednu komponentu tog
+     * tipa. Vrednosti mapirane sa tipkomponente.tipKomponenteID slogom.
+     */
+    private final int[] jedinstveniTipoviKomponente = new int[]{1, 2, 6, 7, 8, 9, 10, 11, 12, 14};
+
     @Inject
     RacunarDaoLocal racunarDao;
 
@@ -39,9 +47,9 @@ public class RacunarBO {
         if (zalihaRacunara < izmenjeni) {
             int razlika = izmenjeni - zalihaRacunara;
             racunar.setKolicinaNaZalihi(razlika);
-            for (Ugradnja ugradnja : racunar.getUgradnje()) {
+            racunar.getUgradnje().forEach((ugradnja) -> {
                 komponentaDao.smanjiKolicinu(ugradnja);
-            }
+            });
         }
         racunar.setKolicinaNaZalihi(izmenjeni);
         racunarDao.izmeniRacunar(racunar);
@@ -50,9 +58,9 @@ public class RacunarBO {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void zapamtiRacunar(Racunar racunar) {
         racunarDao.zapamtiRacunar(racunar);
-        for (Ugradnja ugradnja : racunar.getUgradnje()) {
+        racunar.getUgradnje().forEach((ugradnja) -> {
             komponentaDao.smanjiKolicinu(ugradnja);
-        }
+        });
     }
 
     public void obrisiRacunar(Racunar racunar) {
@@ -64,42 +72,65 @@ public class RacunarBO {
         return racunari;
     }
 
-    //FIXME: refactor this spaghetti
-    public void dodajUgradnju(Ugradnja ugradnja) throws Exception {
-        boolean contains = false;
-        if (!ugradnja.getRacunar().getUgradnje().isEmpty()) {
-            for (Ugradnja u : ugradnja.getRacunar().getUgradnje()) {
-                if (u.getKomponenta().getTip().equals(ugradnja.getKomponenta().getTip())) {
-                    if (jedinstvenaKomponenta(ugradnja.getKomponenta())) {
-                        throw new Exception("Komponenta je vec ugraÄ‘ena u raÄŤunar");
-                    } else {
-                        if (u.getKomponenta().equals(ugradnja.getKomponenta())) {
-                            int kolicina = u.getKolicina();
-                            int temp = ugradnja.getKolicina();
-                            kolicina += temp;
-                            u.setKolicina(kolicina);
-                            contains = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (!contains) {
-                ugradnja.getRacunar().getUgradnje().add(ugradnja);
-            }
-        } else {
-            ugradnja.getRacunar().getUgradnje().add(ugradnja);
-        }
+    /**
+     * Moguci use case-evi pri dodavanju komponente u racunar: 
+     * 1. Komponenta je jedinstvenog tipa i vec postoji ugradjena komponenta istog tipa - NE DODAJE SE 
+     * 2. Komponenta nije jedinstvenog tipa i vec je ugradjena u racunar - POVECAVA SE KOLICINA 
+     * 3. Komponenta je ili jedinstvenog tipa ali komponenta istog tipa nije vec ugradjena ili nije jedinstvenog tipa
+     *    i nije ugradjena - DODAJE SE
+     * @param ugradnja
+     * @throws NonUniqueResourceException Vec postoji ugradjena komponenta istog tipa
+     */
+    public void dodajUgradnju(Ugradnja ugradnja) throws NonUniqueResourceException {
+        List<Ugradnja> postojeceUgradnje = ugradnja.getRacunar().getUgradnje();
+        final TipKomponente tipNoveKomponente = ugradnja.getKomponenta().getTip();
 
+        final boolean postojiTipKomponente = postojiTipKomponente(postojeceUgradnje, tipNoveKomponente);
+        final Ugradnja istaKomponenta = postojiKomponenta(postojeceUgradnje, ugradnja.getKomponenta());
+
+        if (jedinstveniTipKomponente(tipNoveKomponente) && postojiTipKomponente) {
+            throw new NonUniqueResourceException(ugradnja.getKomponenta());
+        } else if (!jedinstveniTipKomponente(tipNoveKomponente) && istaKomponenta != null) {
+            istaKomponenta.setKolicina(istaKomponenta.getKolicina() + 1);
+        } else {
+            postojeceUgradnje.add(ugradnja);
+        }
     }
 
-    public boolean jedinstvenaKomponenta(Komponenta komponenta) {
-        String[] jedinstveneKomponente = {"MatiÄŤna ploÄŤa", "Procesor", "Hladnjak", "Operativni sistem", "KuÄ‡iĹˇte", "Napajanje", "ZvuÄŤna karta", "Tastatura", "MiĹˇ", "GrafiÄŤka karta"};
-        if (Arrays.asList(jedinstveneKomponente).contains(komponenta.getTip().getNaziv())) {
-            return true;
-        } else {
-            return false;
-        }
+    /**
+     * Utvrdjuje da li je tip jedan od jedinstvenih tipova komponenti. Tip je jedinstven ukoliko se komponenta tog tipa
+     * moze ugraditi samo jednom u racunar.
+     *
+     * @param tip
+     * @return
+     */
+    public boolean jedinstveniTipKomponente(TipKomponente tip) {
+        return IntStream.of(jedinstveniTipoviKomponente).anyMatch(tip.getId()::equals);
+    }
+
+    /**
+     * Pretraga da li je u racunar ugradjena ista komponenta
+     *
+     * @param ugradnje Ugradjene komponente
+     * @param ugradnja Nova komponenta
+     * @return
+     */
+    private Ugradnja postojiKomponenta(List<Ugradnja> ugradnje, Komponenta komponenta) {
+        return ugradnje.stream()
+                .filter(p -> p.getKomponenta().getTip().equals(komponenta.getTip()))
+                .filter(p -> p.getKomponenta().equals(komponenta))
+                .findFirst().orElse(null);
+    }
+
+    /**
+     * Pretraga da li je u racunar ugradjena komponenta istog tipa
+     *
+     * @param ugradnje Ugradjene komponente
+     * @param tip Tip komponente koju zelimo da ugradimo
+     * @return
+     */
+    private boolean postojiTipKomponente(List<Ugradnja> ugradnje, TipKomponente tip) {
+        return ugradnje.stream().anyMatch(u -> u.getKomponenta().getTip().equals(tip));
     }
 
 }

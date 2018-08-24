@@ -12,17 +12,16 @@ import com.misinovic.prodavnicaracunara.domen.Komponenta;
 import com.misinovic.prodavnicaracunara.domen.Racunar;
 import com.misinovic.prodavnicaracunara.domen.TipKomponente;
 import com.misinovic.prodavnicaracunara.domen.Ugradnja;
+import com.misinovic.prodavnicaracunara.exception.NonUniqueResourceException;
 import com.misinovic.prodavnicaracunara.utils.FacesUtils;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -135,7 +134,7 @@ public class KontrolerObradeRacunara implements Serializable {
 
     public boolean disableKolicina() {
         if (komponenta != null) {
-            return racunarBO.jedinstvenaKomponenta(komponenta);
+            return racunarBO.jedinstveniTipKomponente(komponenta.getTip());
         }
         return false;
     }
@@ -156,9 +155,8 @@ public class KontrolerObradeRacunara implements Serializable {
         u.setDatumUgradnje(new Date());
         try {
             racunarBO.dodajUgradnju(u);
-        } catch (Exception ex) {
-            ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), ex.getMessage()));
+        } catch (NonUniqueResourceException nure) {
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "komponentaIstogTipaVecPostoji");
         }
     }
 
