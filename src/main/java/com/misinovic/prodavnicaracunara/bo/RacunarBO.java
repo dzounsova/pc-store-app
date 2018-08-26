@@ -104,7 +104,7 @@ public class RacunarBO {
      * @param tip
      * @return
      */
-    public boolean jedinstveniTipKomponente(TipKomponente tip) {
+    private boolean jedinstveniTipKomponente(TipKomponente tip) {
         return IntStream.of(jedinstveniTipoviKomponente).anyMatch(tip.getId()::equals);
     }
 

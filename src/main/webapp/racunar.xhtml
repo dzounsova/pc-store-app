@@ -56,10 +56,6 @@
                 </f:facet>
             </p:dataTable>
 
-            <p:panelGrid id="panelKolicina" columns="2" styleClass="ui-panelgrid-blank" style="margin-top: 10px;">
-                <p:outputLabel value="#{msg.kolicina}: " />
-                <p:spinner value="#{kontrolerObradeRacunara.kolicina}" min="1" max="4" disabled="#{kontrolerObradeRacunara.disableKolicina()}"/>
-            </p:panelGrid>
             <p:panel styleClass="buttonsPanel">
                 <p:commandButton icon="fa fa-arrow-up" value="#{msg.dodaj}" action="#{kontrolerObradeRacunara.dodajUgradnju()}" update="dtOdabraneKomponente" disabled="#{kontrolerObradeRacunara.edit}"/>
                 <p:commandButton icon="fa fa-arrow-down" value="#{msg.ukloni}" action="#{kontrolerObradeRacunara.ukloniUgradnju()}" update="dtOdabraneKomponente" disabled="#{kontrolerObradeRacunara.edit}"/>
@@ -73,7 +69,6 @@
                         <h:outputText value="#{msg.prikazKomponenti}" />
                     </p:outputPanel>
                 </f:facet>
-                <p:ajax event="rowSelect" update="racunar:panelKolicina"/>
 
                 <p:column headerText="#{msg.sifra}" sortBy="#{komponenta.id}" filterBy="#{komponenta.id}" filterMatchMode="exact">
                     <h:outputText value="#{komponenta.id}" />

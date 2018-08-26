@@ -46,7 +46,7 @@ public class Ugradnja implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date datumUgradnje;
     @Column(name = "kolicina")
-    private Integer kolicina;
+    private Integer kolicina = 1;
     @Transient
     private Racunar racunar;
     @Transient

@@ -54,7 +54,6 @@ public class KontrolerObradeRacunara implements Serializable {
     private Ugradnja ugradnja;
     private Komponenta komponenta;
     private boolean edit;
-    private int kolicina = 1;
     private int zalihaRacunara = 0;
 
     public KontrolerObradeRacunara() {
@@ -124,34 +123,16 @@ public class KontrolerObradeRacunara implements Serializable {
         this.komponenta = komponenta;
     }
 
-    public int getKolicina() {
-        return kolicina;
-    }
-
-    public void setKolicina(int kolicina) {
-        this.kolicina = kolicina;
-    }
-
-    public boolean disableKolicina() {
-        if (komponenta != null) {
-            return racunarBO.jedinstveniTipKomponente(komponenta.getTip());
-        }
-        return false;
-    }
-
     public double ukupnaVrednost() {
-        double vrednost = 0.00;
-        for (Ugradnja u : racunar.getUgradnje()) {
-            vrednost += (u.getKomponenta().getProdajnaCena() * u.getKolicina());
-        }
-        return vrednost;
+        return racunar.getUgradnje().stream()
+                .map(u -> u.getKomponenta().getProdajnaCena() * u.getKolicina())
+                .reduce(0.0, Double::sum);
     }
 
     public void dodajUgradnju() {
         Ugradnja u = new Ugradnja();
         u.setRacunar(racunar);
         u.setKomponenta(komponenta);
-        u.setKolicina(kolicina);
         u.setDatumUgradnje(new Date());
         try {
             racunarBO.dodajUgradnju(u);
