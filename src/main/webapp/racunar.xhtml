@@ -10,12 +10,15 @@
     <ui:define name="pageTitle">#{kontrolerObradeRacunara.edit ? msg.izmenaRacunara : msg.noviRacunar}</ui:define>
     <ui:define name ="content">
         <h:form id="racunar">
-            <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="margin-bottom: 20px;">
+            <p:panelGrid id="racunarBasicInfo" columns="3" styleClass="ui-panelgrid-blank" style="margin-bottom: 20px;">
                 <p:outputLabel for="naziv" value="#{msg.naziv}: " />
-                <p:inputText id="naziv"  value="#{kontrolerObradeRacunara.racunar.naziv}" required="#{not empty param[save.clientId]}" requiredMessage="Morate uneti naziv komponente."/>
+                <p:inputText id="naziv"  value="#{kontrolerObradeRacunara.racunar.naziv}" required="#{not empty param[save.clientId]}" requiredMessage="#{msg.nazivRequired}"/>
+                <p:message for="naziv"/>
+                
                 <p:outputLabel for ="kolicina" value="#{msg.kolicina}: " />
                 <p:spinner id="kolicina" value="#{kontrolerObradeRacunara.racunar.kolicinaNaZalihi}" min="1"/>
-
+                <p:message for="kolicina"/>
+                
                 <p:outputLabel for="specifikacija" value="#{msg.specifikacija}: "/>
                 <p:inputTextarea id="specifikacija" value="#{kontrolerObradeRacunara.racunar.specifikacija}" rows="5" cols="40"/>
             </p:panelGrid>
@@ -111,7 +114,7 @@
                 });
             </script>-->
             <p:panel styleClass="buttonsPanel">
-                <p:commandButton icon="fa fa-save" binding="#{save}" value="#{msg.sacuvaj}" action="#{kontrolerObradeRacunara.zapamtiRacunar()}"/>
+                <p:commandButton icon="fa fa-save" binding="#{save}" value="#{msg.sacuvaj}" action="#{kontrolerObradeRacunara.zapamtiRacunar()}" update="racunarBasicInfo"/>
             </p:panel>
         </h:form>
 
