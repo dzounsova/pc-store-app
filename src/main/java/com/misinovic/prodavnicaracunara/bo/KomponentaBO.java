@@ -51,12 +51,19 @@ public class KomponentaBO {
         return komponente;
     }
 
+    public List<Komponenta> ucitajRaspoloziveKomponente() {
+        List<Komponenta> komponente = komponentaDao.ucitajRaspoloziveKomponente();
+        return komponente;
+    }
+
     public Komponenta ucitajKomponentu(Komponenta komponenta) {
         return komponentaDao.ucitajKomponentu(komponenta.getId());
     }
 
     private void validirajKomponentu(Komponenta komponenta) throws ConstraintViolationException {
-        validator.validate(komponenta).stream().forEach(violation -> {throw new ConstraintViolationException(violation);});
+        validator.validate(komponenta).stream().forEach(violation -> {
+            throw new ConstraintViolationException(violation);
+        });
     }
 
     public void smanjiKolicinu(Komponenta komponenta, int kolicina) throws ConstraintViolationException {

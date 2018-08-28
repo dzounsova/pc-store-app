@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = Komponenta.NamedQuery.findAll, query = "SELECT k FROM Komponenta k"),
     @NamedQuery(name = Komponenta.NamedQuery.findById, query = "SELECT k FROM Komponenta k WHERE k.id = :id"),
     @NamedQuery(name = Komponenta.NamedQuery.findByProizvodjac, query = "SELECT k FROM Komponenta k WHERE k.proizvodjac = :proizvodjac"),
+    @NamedQuery(name = Komponenta.NamedQuery.findByKolicina, query = "SELECT k FROM Komponenta k WHERE k.kolicinaNaZalihi > 0"),
     @NamedQuery(name = Komponenta.NamedQuery.findByComparableAttributes, query = "SELECT k FROM Komponenta k WHERE k.proizvodjac = :proizvodjac AND k.tip = :tip AND k.naziv = :naziv")})
 public class Komponenta extends RacunarKomponenta implements Serializable {
 
@@ -91,5 +92,6 @@ public class Komponenta extends RacunarKomponenta implements Serializable {
         public static final String findById = "Komponenta.findById";
         public static final String findByProizvodjac = "Komponenta.findByProizvodjac";
         public static final String findByComparableAttributes = "Komponenta.findByComparableAttributes";
+        public static final String findByKolicina = "Komponenta.findByKolicina";
     }
 }

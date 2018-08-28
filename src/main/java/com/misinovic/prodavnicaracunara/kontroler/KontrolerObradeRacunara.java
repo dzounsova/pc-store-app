@@ -73,7 +73,7 @@ public class KontrolerObradeRacunara implements Serializable {
     }
 
     public void inicijalizujKomponente() {
-        komponente = komponentaBO.ucitajKomponente();
+        komponente = komponentaBO.ucitajRaspoloziveKomponente();
     }
 
     private void odrediRezim() {

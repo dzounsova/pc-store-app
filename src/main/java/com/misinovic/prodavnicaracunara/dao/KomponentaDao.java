@@ -59,6 +59,13 @@ public class KomponentaDao implements KomponentaDaoLocal {
     }
 
     @Override
+    public List<Komponenta> ucitajRaspoloziveKomponente() {
+        LOG.log(Level.INFO, "ucitajKomponente");
+        List<Komponenta> komponente = em.createNamedQuery(Komponenta.NamedQuery.findByKolicina).getResultList();
+        return komponente;
+    }
+
+    @Override
     public void zapamtiKomponentu(Komponenta komponenta) {
         LOG.log(Level.INFO, "zapamtiKomponentu");
         em.persist(komponenta);

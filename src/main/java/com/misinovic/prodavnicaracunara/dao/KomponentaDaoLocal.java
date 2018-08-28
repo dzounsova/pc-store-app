@@ -23,6 +23,8 @@ public interface KomponentaDaoLocal {
     public Komponenta ucitajKomponentu(Komponenta komponenta) throws NoResultException;
 
     public List<Komponenta> ucitajKomponente();
+    
+    public List<Komponenta> ucitajRaspoloziveKomponente();
 
     public void zapamtiKomponentu(Komponenta komponenta);
 
