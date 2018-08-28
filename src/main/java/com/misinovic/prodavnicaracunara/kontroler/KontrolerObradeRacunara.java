@@ -14,6 +14,7 @@ import com.misinovic.prodavnicaracunara.domen.TipKomponente;
 import com.misinovic.prodavnicaracunara.domen.Ugradnja;
 import com.misinovic.prodavnicaracunara.exception.ConstraintViolationException;
 import com.misinovic.prodavnicaracunara.exception.NonUniqueResourceException;
+import com.misinovic.prodavnicaracunara.exception.IllegalStateException;
 import com.misinovic.prodavnicaracunara.utils.FacesUtils;
 import java.io.IOException;
 import java.io.Serializable;
@@ -161,16 +162,21 @@ public class KontrolerObradeRacunara implements Serializable {
             racunar.setZaposleni(kontrolerZaposlenih.getZaposleni());
             racunar.setProdajnaCena(ukupnaVrednost());
             try {
+                racunarBO.validirajRacunar(racunar);
                 racunarBO.zapamtiRacunar(racunar);
                 FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "racunarZapamcen");
+                FacesUtils.redirect("racunar.xhtml");
+            } catch (IllegalStateException ise) {
+                LOG.log(Level.WARNING, ise.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "racunarNijeZapamcenFaleKomponente");
             } catch (ConstraintViolationException cve) {
-                LOG.log(Level.SEVERE, cve.getMessage());
-                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunarNijeZapamcenNemaZaliha");
+                LOG.log(Level.WARNING, cve.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "racunarNijeZapamcenNemaZaliha");
             } catch (Exception e) {
                 LOG.log(Level.SEVERE, e.getMessage());
                 FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunarNijeZapamcen");
+                FacesUtils.redirect("racunar.xhtml");
             }
-            FacesUtils.redirect("racunar.xhtml");
         }
     }
 }

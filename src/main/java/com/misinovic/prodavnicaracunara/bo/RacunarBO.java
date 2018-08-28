@@ -11,8 +11,10 @@ import com.misinovic.prodavnicaracunara.domen.Racunar;
 import com.misinovic.prodavnicaracunara.domen.TipKomponente;
 import com.misinovic.prodavnicaracunara.domen.Ugradnja;
 import com.misinovic.prodavnicaracunara.exception.NonUniqueResourceException;
+import com.misinovic.prodavnicaracunara.exception.IllegalStateException;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -32,7 +34,9 @@ public class RacunarBO {
      * Skup jedinstvenih tipova komponenti. Ukoliko je tip jedinstven, racunar moze imati najvise jednu komponentu tog
      * tipa. Vrednosti mapirane sa tipkomponente.tipKomponenteID slogom.
      */
-    private final int[] jedinstveniTipoviKomponente = new int[]{1, 2, 6, 7, 8, 9, 10, 11, 12, 14};
+    private final Integer[] jedinstveniTipoviKomponente = new Integer[]{1, 2, 6, 7, 8, 9, 10, 11, 12, 14};
+
+    private final Integer[] obavezniTipoviKomponenti = new Integer[]{1, 2, 3, 4, 6, 8, 9, 10, 14};
 
     @Inject
     RacunarDaoLocal racunarDao;
@@ -106,7 +110,7 @@ public class RacunarBO {
      * @return
      */
     private boolean jedinstveniTipKomponente(TipKomponente tip) {
-        return IntStream.of(jedinstveniTipoviKomponente).anyMatch(tip.getId()::equals);
+        return Arrays.asList(jedinstveniTipoviKomponente).stream().anyMatch(tip.getId()::equals);
     }
 
     /**
@@ -132,6 +136,25 @@ public class RacunarBO {
      */
     private boolean postojiTipKomponente(List<Ugradnja> ugradnje, TipKomponente tip) {
         return ugradnje.stream().anyMatch(u -> u.getKomponenta().getTip().equals(tip));
+    }
+
+    /**
+     * Provera da li racunar ima sve neophodne komponente
+     *
+     * @param racunar
+     */
+    public void validirajRacunar(Racunar racunar) throws IllegalStateException {
+        List<Integer> ugradjeniTipovi = racunar.getUgradnje().stream()
+                .map(u -> u.getKomponenta().getTip().getId())
+                .collect(Collectors.toList());
+
+        Arrays.asList(obavezniTipoviKomponenti).stream()
+                .filter(t -> !ugradjeniTipovi.contains(t))
+                .forEach(mismatch -> {
+                    throw new IllegalStateException("Business constraint violation on entity: "
+                            + racunar.getClass().getSimpleName() + ", property: ugradnje, "
+                            + "rule: must have all required component types including type: " + mismatch);
+                });
     }
 
 }

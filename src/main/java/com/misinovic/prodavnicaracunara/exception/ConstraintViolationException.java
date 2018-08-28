@@ -18,7 +18,7 @@ public class ConstraintViolationException extends RuntimeException {
     public static final String MESSAGE_TEMPLATE = "Constraint violation on entity: %s, property: %s, rule: %s";
 
     public ConstraintViolationException(ConstraintViolation constraintViolation) {
-        super(String.format(MESSAGE_TEMPLATE, constraintViolation.getRootBean().getClass().getName(), 
+        super(String.format(MESSAGE_TEMPLATE, constraintViolation.getRootBean().getClass().getSimpleName(), 
                 constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage()));
     }
 
