@@ -30,8 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = Komponenta.NamedQuery.findAll, query = "SELECT k FROM Komponenta k"),
     @NamedQuery(name = Komponenta.NamedQuery.findById, query = "SELECT k FROM Komponenta k WHERE k.id = :id"),
     @NamedQuery(name = Komponenta.NamedQuery.findByProizvodjac, query = "SELECT k FROM Komponenta k WHERE k.proizvodjac = :proizvodjac"),
-    @NamedQuery(name = Komponenta.NamedQuery.findByComparableAttributes, query = "SELECT k FROM Komponenta k WHERE k.proizvodjac = :proizvodjac AND k.tip = :tip AND k.naziv = :naziv"),
-    @NamedQuery(name = Komponenta.NamedQuery.smanjiKolicinu, query = "UPDATE Komponenta k SET k.kolicinaNaZalihi = k.kolicinaNaZalihi - :kolicina WHERE k.id = :id")})
+    @NamedQuery(name = Komponenta.NamedQuery.findByComparableAttributes, query = "SELECT k FROM Komponenta k WHERE k.proizvodjac = :proizvodjac AND k.tip = :tip AND k.naziv = :naziv")})
 public class Komponenta extends RacunarKomponenta implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -92,6 +91,5 @@ public class Komponenta extends RacunarKomponenta implements Serializable {
         public static final String findById = "Komponenta.findById";
         public static final String findByProizvodjac = "Komponenta.findByProizvodjac";
         public static final String findByComparableAttributes = "Komponenta.findByComparableAttributes";
-        public static final String smanjiKolicinu = "Komponenta.smanjiKolicinu";
     }
 }

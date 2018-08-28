@@ -5,7 +5,6 @@
  */
 package com.misinovic.prodavnicaracunara.bo;
 
-import com.misinovic.prodavnicaracunara.dao.KomponentaDaoLocal;
 import com.misinovic.prodavnicaracunara.dao.RacunarDaoLocal;
 import com.misinovic.prodavnicaracunara.domen.Komponenta;
 import com.misinovic.prodavnicaracunara.domen.Racunar;
@@ -39,19 +38,19 @@ public class RacunarBO {
     RacunarDaoLocal racunarDao;
 
     @Inject
-    KomponentaDaoLocal komponentaDao;
+    KomponentaBO komponentaBO;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void izmeniRacunar(Racunar racunar, int zalihaRacunara) {
         int izmenjeni = racunar.getKolicinaNaZalihi();
         if (zalihaRacunara < izmenjeni) {
             int razlika = izmenjeni - zalihaRacunara;
-            racunar.setKolicinaNaZalihi(razlika);
             racunar.getUgradnje().forEach((ugradnja) -> {
-                komponentaDao.smanjiKolicinu(ugradnja);
+                Komponenta k = ugradnja.getKomponenta();
+                int kolicina = ugradnja.getKolicina() * razlika;
+                komponentaBO.smanjiKolicinu(k, kolicina);
             });
         }
-        racunar.setKolicinaNaZalihi(izmenjeni);
         racunarDao.izmeniRacunar(racunar);
     }
 
@@ -59,7 +58,9 @@ public class RacunarBO {
     public void zapamtiRacunar(Racunar racunar) {
         racunarDao.zapamtiRacunar(racunar);
         racunar.getUgradnje().forEach((ugradnja) -> {
-            komponentaDao.smanjiKolicinu(ugradnja);
+            Komponenta k = ugradnja.getKomponenta();
+            int kolicina = ugradnja.getKolicina() * racunar.getKolicinaNaZalihi();
+            komponentaBO.smanjiKolicinu(k, kolicina);
         });
     }
 

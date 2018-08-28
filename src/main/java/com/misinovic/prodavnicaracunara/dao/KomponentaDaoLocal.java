@@ -30,5 +30,4 @@ public interface KomponentaDaoLocal {
 
     public void obrisiKomponentu(Komponenta komponenta);
 
-    public void smanjiKolicinu(Ugradnja ugradnja);
 }

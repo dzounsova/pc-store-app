@@ -12,6 +12,7 @@ import com.misinovic.prodavnicaracunara.domen.Komponenta;
 import com.misinovic.prodavnicaracunara.domen.Racunar;
 import com.misinovic.prodavnicaracunara.domen.TipKomponente;
 import com.misinovic.prodavnicaracunara.domen.Ugradnja;
+import com.misinovic.prodavnicaracunara.exception.ConstraintViolationException;
 import com.misinovic.prodavnicaracunara.exception.NonUniqueResourceException;
 import com.misinovic.prodavnicaracunara.utils.FacesUtils;
 import java.io.IOException;
@@ -162,6 +163,9 @@ public class KontrolerObradeRacunara implements Serializable {
             try {
                 racunarBO.zapamtiRacunar(racunar);
                 FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "racunarZapamcen");
+            } catch (ConstraintViolationException cve) {
+                LOG.log(Level.SEVERE, cve.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunarNijeZapamcenNemaZaliha");
             } catch (Exception e) {
                 LOG.log(Level.SEVERE, e.getMessage());
                 FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunarNijeZapamcen");
