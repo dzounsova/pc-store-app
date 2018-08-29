@@ -36,6 +36,10 @@ public class RacunarBO {
      */
     private final Integer[] jedinstveniTipoviKomponente = new Integer[]{1, 2, 6, 7, 8, 9, 10, 11, 12, 14};
 
+    /**
+     * Obavezni tipovi komponenti. Svaki racunar mora imati ugradjenu makar jednu komponentu svakog od ovih tipova. Npr.
+     * racunar mora imati procesor ali ne mora imati U/I jedinice.
+     */
     private final Integer[] obavezniTipoviKomponenti = new Integer[]{1, 2, 3, 4, 6, 8, 9, 10, 14};
 
     @Inject
