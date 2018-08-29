@@ -61,9 +61,11 @@ public class KomponentaBO {
     }
 
     private void validirajKomponentu(Komponenta komponenta) throws ConstraintViolationException {
-        validator.validate(komponenta).stream().forEach(violation -> {
-            throw new ConstraintViolationException(violation);
-        });
+        validator.validate(komponenta).stream()
+                .findFirst()
+                .ifPresent(violation -> {
+                    throw new ConstraintViolationException(violation);
+                });
     }
 
     public void smanjiKolicinu(Komponenta komponenta, int kolicina) throws ConstraintViolationException {

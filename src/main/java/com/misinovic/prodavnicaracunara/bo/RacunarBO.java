@@ -150,7 +150,8 @@ public class RacunarBO {
 
         Arrays.asList(obavezniTipoviKomponenti).stream()
                 .filter(t -> !ugradjeniTipovi.contains(t))
-                .forEach(mismatch -> {
+                .findFirst()
+                .ifPresent(mismatch -> {
                     throw new IllegalStateException("Business constraint violation on entity: "
                             + racunar.getClass().getSimpleName() + ", property: ugradnje, "
                             + "rule: must have all required component types including type: " + mismatch);
