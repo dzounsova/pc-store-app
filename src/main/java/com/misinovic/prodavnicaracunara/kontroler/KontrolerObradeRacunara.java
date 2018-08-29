@@ -166,6 +166,10 @@ public class KontrolerObradeRacunara implements Serializable {
                 racunarBO.zapamtiRacunar(racunar);
                 FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "racunarZapamcen");
                 FacesUtils.redirect("racunar.xhtml");
+            } catch (NonUniqueResourceException nure) {
+                LOG.log(Level.SEVERE, nure.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunarVecPostoji");
+                FacesUtils.redirect("racunar.xhtml");
             } catch (IllegalStateException ise) {
                 LOG.log(Level.WARNING, ise.getMessage());
                 FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "racunarNijeZapamcenFaleKomponente");

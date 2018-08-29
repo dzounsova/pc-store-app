@@ -63,7 +63,8 @@ public class RacunarBO {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void zapamtiRacunar(Racunar racunar) {
+    public void zapamtiRacunar(Racunar racunar) throws NonUniqueResourceException {
+        proveriDuplikat(racunar);
         racunarDao.zapamtiRacunar(racunar);
         racunar.getUgradnje().forEach((ugradnja) -> {
             Komponenta k = ugradnja.getKomponenta();
@@ -160,6 +161,24 @@ public class RacunarBO {
                             + racunar.getClass().getSimpleName() + ", property: ugradnje, "
                             + "rule: must have all required component types including type: " + mismatch);
                 });
+    }
+
+    private void proveriDuplikat(Racunar racunar) throws NonUniqueResourceException {
+        // Ugradnja je ista ukoliko je vezana za isti racunar i istu komponentu.
+        // Posto pri kreiranju novog racunara nemamo racunarID necemo moci da proverimo jednakost.
+        // Iz tog razloga uzimamo za pretpostavku da je racunar isti i proveravamo da li su sve komponente iste.
+        Integer temp = racunar.getId();
+        List<Ugradnja> ugradnje = racunar.getUgradnje();
+        List<Racunar> racunari = ucitajRacunare();
+
+        for (Racunar r : racunari) {
+            racunar.setId(r.getId());
+            if (r.getUgradnje().containsAll(ugradnje) && ugradnje.containsAll(r.getUgradnje())) {
+                racunar.setId(temp);
+                throw new NonUniqueResourceException(racunar);
+            }
+        }
+        racunar.setId(temp);
     }
 
 }

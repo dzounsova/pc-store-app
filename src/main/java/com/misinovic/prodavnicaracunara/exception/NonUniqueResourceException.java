@@ -11,7 +11,7 @@ import javax.ejb.ApplicationException;
  *
  * @author Misinovic
  */
-@ApplicationException
+@ApplicationException(rollback = true)
 public class NonUniqueResourceException extends Exception {
 
     public static final String MESSAGE_TEMPLATE = "Resource of type %s with the same business key, already exists.";

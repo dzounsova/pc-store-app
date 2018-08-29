@@ -35,7 +35,7 @@ public class KomponentaBO {
 
     public void zapamtiKomponentu(Komponenta komponenta) throws NonUniqueResourceException {
         try {
-            Komponenta k = komponentaDao.ucitajKomponentu(komponenta);
+            Komponenta k = ucitajKomponentu(komponenta);
             throw new NonUniqueResourceException(k);
         } catch (NoResultException nre) {
             komponentaDao.zapamtiKomponentu(komponenta);

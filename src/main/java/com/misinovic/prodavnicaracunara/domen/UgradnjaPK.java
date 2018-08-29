@@ -55,10 +55,10 @@ public class UgradnjaPK implements Serializable {
             return false;
         }
         UgradnjaPK other = (UgradnjaPK) object;
-        if (this.racunar != other.racunar) {
+        if (!this.racunar.equals(other.racunar)) {
             return false;
         }
-        if (this.komponenta != other.komponenta) {
+        if (!this.komponenta.equals(other.komponenta)) {
             return false;
         }
         return true;
