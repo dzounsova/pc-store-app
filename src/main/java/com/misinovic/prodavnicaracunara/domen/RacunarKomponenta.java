@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = RacunarKomponenta.NamedQuery.findByNaziv, query = "SELECT r FROM RacunarKomponenta r WHERE r.naziv = :naziv"),
     @NamedQuery(name = RacunarKomponenta.NamedQuery.findByProdajnaCena, query = "SELECT r FROM RacunarKomponenta r WHERE r.prodajnaCena = :prodajnaCena"),
     @NamedQuery(name = RacunarKomponenta.NamedQuery.findBySpecifikacija, query = "SELECT r FROM RacunarKomponenta r WHERE r.specifikacija = :specifikacija"),
-    @NamedQuery(name = RacunarKomponenta.NamedQuery.findByKolicinaNaZalihi, query = "SELECT r FROM RacunarKomponenta r WHERE r.kolicinaNaZalihi = :kolicinaNaZalihi"),
+    @NamedQuery(name = RacunarKomponenta.NamedQuery.findByKolicinaNaZalihi, query = "SELECT r FROM RacunarKomponenta r WHERE r.kolicinaNaZalihi > 0"),
     @NamedQuery(name = RacunarKomponenta.NamedQuery.smanjiKolicinu, query = "UPDATE RacunarKomponenta r SET r.kolicinaNaZalihi = r.kolicinaNaZalihi - :kolicina WHERE r.id = :id")})
 public class RacunarKomponenta implements Serializable {
 

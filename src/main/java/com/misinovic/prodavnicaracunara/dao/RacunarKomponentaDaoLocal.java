@@ -20,6 +20,8 @@ public interface RacunarKomponentaDaoLocal {
     public RacunarKomponenta ucitajRacunarIliKomponentu(int id);
 
     public List<RacunarKomponenta> ucitajRacunareIKomponente();
+    
+    public List<RacunarKomponenta> ucitajRaspoloziveRacunareIKomponente();
 
     public void smanjiKolicinu(StavkaRacuna stavka);
 }

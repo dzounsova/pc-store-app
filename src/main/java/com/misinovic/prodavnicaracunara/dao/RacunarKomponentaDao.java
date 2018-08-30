@@ -42,7 +42,15 @@ public class RacunarKomponentaDao implements RacunarKomponentaDaoLocal {
 
     @Override
     public List<RacunarKomponenta> ucitajRacunareIKomponente() {
+        LOG.log(Level.INFO, "ucitajRacunareIKomponente");
         List<RacunarKomponenta> lista = em.createNamedQuery(RacunarKomponenta.NamedQuery.findAll).getResultList();
+        return lista;
+    }
+
+    @Override
+    public List<RacunarKomponenta> ucitajRaspoloziveRacunareIKomponente() {
+        LOG.log(Level.INFO, "ucitajRaspoloziveRacunareIKomponente");
+        List<RacunarKomponenta> lista = em.createNamedQuery(RacunarKomponenta.NamedQuery.findByKolicinaNaZalihi).getResultList();
         return lista;
     }
 

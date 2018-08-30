@@ -24,8 +24,8 @@ public class RacunarKomponentaBO {
     @Inject
     RacunarKomponentaDaoLocal racunarKomponentaDao;
 
-    public List<RacunarKomponenta> ucitajRacunareIKomponente() {
-        List<RacunarKomponenta> racunariIKomponente = racunarKomponentaDao.ucitajRacunareIKomponente();
+    public List<RacunarKomponenta> ucitajRaspoloziveRacunareIKomponente() {
+        List<RacunarKomponenta> racunariIKomponente = racunarKomponentaDao.ucitajRaspoloziveRacunareIKomponente();
         return racunariIKomponente;
     }
 

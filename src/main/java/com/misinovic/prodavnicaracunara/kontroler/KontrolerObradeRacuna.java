@@ -56,7 +56,7 @@ public class KontrolerObradeRacuna implements Serializable {
 
     @PostConstruct
     public void init() {
-        racunariIkomponente = racunarKomponentaBO.ucitajRacunareIKomponente();
+        racunariIkomponente = racunarKomponentaBO.ucitajRaspoloziveRacunareIKomponente();
         racun = new Racun();
     }
 

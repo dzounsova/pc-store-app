@@ -60,7 +60,7 @@ public class KomponentaDao implements KomponentaDaoLocal {
 
     @Override
     public List<Komponenta> ucitajRaspoloziveKomponente() {
-        LOG.log(Level.INFO, "ucitajKomponente");
+        LOG.log(Level.INFO, "ucitajRaspoloziveKomponente");
         List<Komponenta> komponente = em.createNamedQuery(Komponenta.NamedQuery.findByKolicina).getResultList();
         return komponente;
     }
