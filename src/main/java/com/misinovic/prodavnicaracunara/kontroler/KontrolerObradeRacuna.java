@@ -40,6 +40,11 @@ public class KontrolerObradeRacuna implements Serializable {
     @Inject
     RacunBO racunBO;
 
+    /**
+     * Dummy vrednost koja predstavlja tip komponente - racunar
+     */
+    private static final String TIP_RACUNAR = "Računar";
+
     private List<RacunarKomponenta> racunariIkomponente;
     private Racun racun;
     private StavkaRacuna stavkaRacuna;
@@ -97,7 +102,7 @@ public class KontrolerObradeRacuna implements Serializable {
 
     public String vratiTip(RacunarKomponenta racunarKomponenta) {
         if (isRacunar(racunarKomponenta)) {
-            return "Računar";
+            return TIP_RACUNAR;
         } else {
             Komponenta komponenta = (Komponenta) racunarKomponenta;
             return komponenta.getTip().getNaziv();
@@ -109,11 +114,9 @@ public class KontrolerObradeRacuna implements Serializable {
     }
 
     public double ukupnaVrednost() {
-        double vrednost = 0.00;
-        for (StavkaRacuna s : racun.getStavkeRacuna()) {
-            vrednost += (s.getUkupnaVrednost());
-        }
-        return vrednost;
+        return racun.getStavkeRacuna().stream()
+                .map(StavkaRacuna::getUkupnaVrednost)
+                .reduce(0.0, Double::sum);
     }
 
     public int vratiRedniBroj(StavkaRacuna stavkaRacuna) {
