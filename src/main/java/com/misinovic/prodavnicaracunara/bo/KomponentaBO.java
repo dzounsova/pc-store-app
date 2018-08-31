@@ -35,7 +35,7 @@ public class KomponentaBO {
 
     public void zapamtiKomponentu(Komponenta komponenta) throws NonUniqueResourceException {
         try {
-            Komponenta k = ucitajKomponentu(komponenta);
+            Komponenta k = pronadjiDuplikat(komponenta);
             throw new NonUniqueResourceException(k);
         } catch (NoResultException nre) {
             komponentaDao.zapamtiKomponentu(komponenta);
@@ -58,6 +58,10 @@ public class KomponentaBO {
 
     public Komponenta ucitajKomponentu(Komponenta komponenta) {
         return komponentaDao.ucitajKomponentu(komponenta.getId());
+    }
+
+    public Komponenta pronadjiDuplikat(Komponenta komponenta) {
+        return komponentaDao.ucitajKomponentu(komponenta);
     }
 
     private void validirajKomponentu(Komponenta komponenta) throws ConstraintViolationException {
