@@ -12,10 +12,15 @@ import com.misinovic.prodavnicaracunara.domen.Racun;
 import com.misinovic.prodavnicaracunara.domen.Racunar;
 import com.misinovic.prodavnicaracunara.domen.RacunarKomponenta;
 import com.misinovic.prodavnicaracunara.domen.StavkaRacuna;
+import com.misinovic.prodavnicaracunara.exception.ConstraintViolationException;
+import com.misinovic.prodavnicaracunara.utils.FacesUtils;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -30,6 +35,8 @@ import javax.inject.Named;
 @Named(value = "kontrolerObradeRacuna")
 @ViewScoped
 public class KontrolerObradeRacuna implements Serializable {
+
+    private static final Logger LOG = Logger.getLogger(KontrolerObradeRacuna.class.getName());
 
     @Inject
     KontrolerZaposlenih kontrolerZaposlenih;
@@ -119,10 +126,6 @@ public class KontrolerObradeRacuna implements Serializable {
                 .reduce(0.0, Double::sum);
     }
 
-    public int vratiRedniBroj(StavkaRacuna stavkaRacuna) {
-        return stavkaRacuna.getRacun().getStavkeRacuna().indexOf(stavkaRacuna) + 1;
-    }
-
     public void dodajStavku() {
         StavkaRacuna stavka = new StavkaRacuna();
         stavka.setRacun(racun);
@@ -134,30 +137,29 @@ public class KontrolerObradeRacuna implements Serializable {
 
     public void ukloniStavku() {
         racun.getStavkeRacuna().remove(stavkaRacuna);
-        osveziRedneBrojeve();
     }
 
-    private void osveziRedneBrojeve() {
-        for (StavkaRacuna s : racun.getStavkeRacuna()) {
-            int index = racun.getStavkeRacuna().indexOf(s);
-            s.setRedniBroj(++index);
-        }
+    private void postaviRedneBrojeve() {
+        racun.getStavkeRacuna().forEach(s -> s.setRedniBroj(1 + racun.getStavkeRacuna().indexOf(s)));
     }
 
-    public String zapamtiRacun() {
-        ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
-
+    public void zapamtiRacun() throws IOException {
+        postaviRedneBrojeve();
         racun.setZaposleni(kontrolerZaposlenih.getZaposleni());
         racun.setUkupnaVrednost(ukupnaVrednost());
         racun.setDatum(new Date());
         try {
             racunBO.zapamtiRacun(racun);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("racunZapamcen")));
+            FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "racunZapamcen");
+            FacesUtils.redirect("racun.xhtml");
+        } catch (ConstraintViolationException cve) {
+            LOG.log(Level.WARNING, cve.getMessage());
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "racunNijeZapamcenNemaZaliha");
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), bundle.getString("racunNijeZapamcen")));
+            LOG.log(Level.SEVERE, e.getMessage());
+            FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunNijeZapamcen");
+            FacesUtils.redirect("racun.xhtml");
         }
-        return "racun";
-
     }
 
 }

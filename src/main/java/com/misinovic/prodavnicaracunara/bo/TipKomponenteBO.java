@@ -8,8 +8,8 @@ package com.misinovic.prodavnicaracunara.bo;
 import com.misinovic.prodavnicaracunara.dao.TipKomponenteDaoLocal;
 import com.misinovic.prodavnicaracunara.domen.TipKomponente;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 /**
  *
@@ -18,7 +18,7 @@ import javax.ejb.Stateless;
 @Stateless
 public class TipKomponenteBO {
 
-    @EJB
+    @Inject
     TipKomponenteDaoLocal tipKomponenteDao;
 
     public List<TipKomponente> ucitajTipove() {

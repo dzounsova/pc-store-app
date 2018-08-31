@@ -31,9 +31,6 @@ public class RacunarKomponentaDao implements RacunarKomponentaDaoLocal {
     @PersistenceContext(unitName = "ProdavnicaRacunaraPU")
     private EntityManager em;
 
-    @Resource
-    Validator validator;
-
     @Override
     public RacunarKomponenta ucitajRacunarIliKomponentu(int id) {
         LOG.log(Level.INFO, "ucitajRacunarIliKomponentu: ", id);
@@ -55,16 +52,9 @@ public class RacunarKomponentaDao implements RacunarKomponentaDaoLocal {
     }
 
     @Override
-    public void smanjiKolicinu(StavkaRacuna stavka) {
-        LOG.log(Level.INFO, "smanjiKolicinu: racunar/komponenta = {0}, kolicina = {1}", new Object[]{stavka.getRacunarKomponenta().getId(), stavka.getKolicina()});
-        Query q = em.createNamedQuery(RacunarKomponenta.NamedQuery.smanjiKolicinu).setParameter("kolicina", stavka.getKolicina()).setParameter("id", stavka.getRacunarKomponenta().getId());
-        q.executeUpdate();
-        RacunarKomponenta rk = ucitajRacunarIliKomponentu(stavka.getRacunarKomponenta().getId());
-        Set<ConstraintViolation<RacunarKomponenta>> violations = validator.validate(rk);
-        if (violations.size() > 0) {
-            LOG.log(Level.INFO, "smanjiKolicinu: Constraint violation");
-            em.getTransaction().rollback();
-        }
+    public void izmeniKomponentu(RacunarKomponenta racunarKomponenta) {
+        LOG.log(Level.INFO, "izmeniRacunarKomponentu: {0}", racunarKomponenta.getId());
+        em.merge(racunarKomponenta);
     }
 
 }

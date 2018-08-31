@@ -12,8 +12,8 @@ import com.misinovic.prodavnicaracunara.exception.NoResultException;
 import com.misinovic.prodavnicaracunara.exception.NonUniqueResourceException;
 import java.util.List;
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.validation.Validator;
 
 /**
@@ -23,7 +23,7 @@ import javax.validation.Validator;
 @Stateless
 public class KomponentaBO {
 
-    @EJB
+    @Inject
     KomponentaDaoLocal komponentaDao;
 
     @Resource

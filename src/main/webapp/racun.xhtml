@@ -14,15 +14,15 @@
             </p:panelGrid>
 
             <p:dataTable id="dtStavkeRacuna" var="stavka" value="#{kontrolerObradeRacuna.racun.stavkeRacuna}" widgetVar="dtStavkeRacuna" scrollable="true" resizeMode="expand"
-                         emptyMessage="#{msg.nemaStavkiRacuna}" selectionMode="single" selection="#{kontrolerObradeRacuna.stavkaRacuna}" rowKey="#{stavka.redniBroj}">
+                         emptyMessage="#{msg.nemaStavkiRacuna}" selectionMode="single" selection="#{kontrolerObradeRacuna.stavkaRacuna}" rowKey="#{stavka.redniBroj}" rowIndexVar="rowIndex">
                 <f:facet name="header">
                     <p:outputPanel>
                         <h:outputText value="#{msg.stavkeRacuna}" />
                     </p:outputPanel>
                 </f:facet>
-                
+
                 <p:column id="rb" headerText="#">
-                    <h:outputText value="#{kontrolerObradeRacuna.vratiRedniBroj(stavka)}" />
+                    <h:outputText value="#{rowIndex + 1}" />
                 </p:column>
 
                 <p:column id="tip" headerText="#{msg.tip}">
@@ -103,7 +103,7 @@
                     </p:outputPanel>
                 </f:facet>
             </p:dataTable>
-            
+
             <p:panel styleClass="buttonsPanel">
                 <p:commandButton icon="fa fa-save" value="#{msg.sacuvaj}" action="#{kontrolerObradeRacuna.zapamtiRacun()}"/>
             </p:panel>

@@ -6,7 +6,6 @@
 package com.misinovic.prodavnicaracunara.dao;
 
 import com.misinovic.prodavnicaracunara.domen.Komponenta;
-import com.misinovic.prodavnicaracunara.domen.Ugradnja;
 import java.util.List;
 import javax.ejb.Local;
 import javax.persistence.NoResultException;

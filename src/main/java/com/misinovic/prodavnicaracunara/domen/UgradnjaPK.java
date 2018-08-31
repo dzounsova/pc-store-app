@@ -17,9 +17,9 @@ import javax.persistence.ManyToOne;
 @Embeddable
 public class UgradnjaPK implements Serializable {
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Racunar racunar;
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Komponenta komponenta;
 
     public UgradnjaPK() {

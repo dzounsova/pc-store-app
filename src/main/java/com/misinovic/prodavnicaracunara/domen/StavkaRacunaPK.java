@@ -60,7 +60,7 @@ public class StavkaRacunaPK implements Serializable {
             return false;
         }
         StavkaRacunaPK other = (StavkaRacunaPK) obj;
-        if (this.racun != other.racun) {
+        if (!this.racun.equals(other.racun)) {
             return false;
         }
         if (this.redniBroj != other.redniBroj) {

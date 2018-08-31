@@ -6,8 +6,8 @@
 package com.misinovic.prodavnicaracunara.bo;
 
 import com.misinovic.prodavnicaracunara.dao.RacunDaoLocal;
-import com.misinovic.prodavnicaracunara.dao.RacunarKomponentaDaoLocal;
 import com.misinovic.prodavnicaracunara.domen.Racun;
+import com.misinovic.prodavnicaracunara.domen.RacunarKomponenta;
 import com.misinovic.prodavnicaracunara.domen.StavkaRacuna;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -29,14 +29,14 @@ public class RacunBO {
     RacunDaoLocal racunDao;
 
     @Inject
-    RacunarKomponentaDaoLocal racunarKomponentaDao;
+    RacunarKomponentaBO racunarKomponentaBO;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void zapamtiRacun(Racun racun) {
         racunDao.zapamtiRacun(racun);
-        for (StavkaRacuna s : racun.getStavkeRacuna()) {
-            racunarKomponentaDao.smanjiKolicinu(s);
-        }
+        racun.getStavkeRacuna().forEach((s) -> {
+            racunarKomponentaBO.smanjiKolicinu(s.getRacunarKomponenta(), s.getKolicina());
+        });
     }
 
     public void obrisiRacun(Racun racun) {
@@ -49,24 +49,23 @@ public class RacunBO {
     }
 
     public void dodajStavku(StavkaRacuna stavka) {
-        boolean contains = false;
-        double vrednostStavke = stavka.getKolicina() * stavka.getProdajnaCena();
-        for (StavkaRacuna s : stavka.getRacun().getStavkeRacuna()) {
-            if (s.getRacunarKomponenta().equals(stavka.getRacunarKomponenta())) {
-                int kolicina = s.getKolicina();
-                double vrednost = s.getUkupnaVrednost();
-                s.setKolicina(kolicina + stavka.getKolicina());
-                s.setUkupnaVrednost(vrednost + vrednostStavke);
-                contains = true;
-                break;
-            }
-        }
-        if (!contains) {
-            int redniBroj = stavka.getRacun().getStavkeRacuna().size();
-            stavka.setRedniBroj(++redniBroj);
+        List<StavkaRacuna> postojeceStavke = stavka.getRacun().getStavkeRacuna();
+        final double vrednostStavke = stavka.getKolicina() * stavka.getProdajnaCena();
+        final StavkaRacuna istaStavka = postojiStavka(postojeceStavke, stavka.getRacunarKomponenta());
+
+        if (istaStavka != null) {
+            istaStavka.setKolicina(stavka.getKolicina() + istaStavka.getKolicina());
+            istaStavka.setUkupnaVrednost(vrednostStavke + istaStavka.getUkupnaVrednost());
+        } else {
             stavka.setUkupnaVrednost(vrednostStavke);
-            stavka.getRacun().getStavkeRacuna().add(stavka);
+            postojeceStavke.add(stavka);
         }
+    }
+
+    private StavkaRacuna postojiStavka(List<StavkaRacuna> postojeceStavke, RacunarKomponenta racunarKomponenta) {
+        return postojeceStavke.stream()
+                .filter(s -> racunarKomponenta.equals(s.getRacunarKomponenta()))
+                .findFirst().orElse(null);
     }
 
 }

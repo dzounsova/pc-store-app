@@ -9,12 +9,13 @@ import com.misinovic.prodavnicaracunara.bo.RacunBO;
 import com.misinovic.prodavnicaracunara.bo.RacunarKomponentaBO;
 import com.misinovic.prodavnicaracunara.domen.Racun;
 import com.misinovic.prodavnicaracunara.domen.RacunarKomponenta;
+import com.misinovic.prodavnicaracunara.utils.FacesUtils;
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -26,6 +27,8 @@ import javax.inject.Named;
 @Named(value = "kontrolerPretrageRacuna")
 @ViewScoped
 public class KontrolerPretrageRacuna implements Serializable {
+
+    private static final Logger LOG = Logger.getLogger(KontrolerPretrageRacuna.class.getName());
 
     @Inject
     RacunarKomponentaBO racunarKomponentaBO;
@@ -70,25 +73,22 @@ public class KontrolerPretrageRacuna implements Serializable {
     }
 
     public boolean disableButtons() {
-        if (racun == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return racun == null;
     }
 
     public void obrisiRacun() {
-        ResourceBundle bundle = ResourceBundle.getBundle("message", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         if (racun != null) {
             try {
                 racunBO.obrisiRacun(racun);
+                // Brisanje racuna iz liste racuna kako bi imali azurne podatke bez dodatnog request-a
                 racuni.remove(racun);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, bundle.getString("info"), bundle.getString("racunObrisan")));
+                FacesUtils.addMessage(FacesMessage.SEVERITY_INFO, "info", "racunObrisan");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, bundle.getString("greska"), bundle.getString("racunNijeObrisan")));
+                LOG.log(Level.SEVERE, e.getMessage());
+                FacesUtils.addMessage(FacesMessage.SEVERITY_ERROR, "greska", "racunNijeObrisan");
             }
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, bundle.getString("upozorenje"), bundle.getString("racunNijeIzabran")));
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "racunNijeIzabran");
         }
     }
 
