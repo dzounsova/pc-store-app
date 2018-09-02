@@ -61,6 +61,10 @@ html,body{
     background-image: none;
 }
 
+.ui-datepicker.ui-widget.ui-widget-content dd{
+    border: 1px solid #aaaaaa;
+}
+
 .ui-corner-all{
     border-radius: 0px;
 }
