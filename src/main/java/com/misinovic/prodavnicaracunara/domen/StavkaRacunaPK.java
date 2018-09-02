@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 @Embeddable
 public class StavkaRacunaPK implements Serializable {
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Racun racun;
     @Basic(optional = false)
     @NotNull

@@ -13,6 +13,7 @@ import com.misinovic.prodavnicaracunara.domen.Racunar;
 import com.misinovic.prodavnicaracunara.domen.RacunarKomponenta;
 import com.misinovic.prodavnicaracunara.domen.StavkaRacuna;
 import com.misinovic.prodavnicaracunara.exception.ConstraintViolationException;
+import com.misinovic.prodavnicaracunara.exception.IllegalStateException;
 import com.misinovic.prodavnicaracunara.utils.FacesUtils;
 import java.io.IOException;
 import java.io.Serializable;
@@ -126,13 +127,31 @@ public class KontrolerObradeRacuna implements Serializable {
                 .reduce(0.0, Double::sum);
     }
 
+    private void proveriKolicinu() throws IllegalStateException {
+        StavkaRacuna istaStavka = racun.getStavkeRacuna().stream()
+                .filter(s -> s.getRacunarKomponenta().equals(racunarKomponenta))
+                .findFirst().orElse(null);
+
+        int dodataKolicina = istaStavka == null ? 0 : istaStavka.getKolicina();
+
+        if (dodataKolicina + kolicina > racunarKomponenta.getKolicinaNaZalihi()) {
+            throw new IllegalStateException();
+        }
+    }
+
     public void dodajStavku() {
         StavkaRacuna stavka = new StavkaRacuna();
         stavka.setRacun(racun);
         stavka.setRacunarKomponenta(racunarKomponenta);
         stavka.setKolicina(kolicina);
         stavka.setProdajnaCena(racunarKomponenta.getProdajnaCena());
-        racunBO.dodajStavku(stavka);
+        try {
+            proveriKolicinu();
+            racunBO.dodajStavku(stavka);
+        } catch (IllegalStateException ise) {
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "stavkaNijeDodata");
+        }
+
     }
 
     public void ukloniStavku() {

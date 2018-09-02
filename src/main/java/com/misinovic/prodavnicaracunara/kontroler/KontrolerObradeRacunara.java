@@ -131,13 +131,28 @@ public class KontrolerObradeRacunara implements Serializable {
                 .reduce(0.0, Double::sum);
     }
 
+    private void proveriKolicinu() throws IllegalStateException {
+        Ugradnja istaKomponenta = racunar.getUgradnje().stream()
+                .filter(u -> u.getKomponenta().equals(komponenta))
+                .findFirst().orElse(null);
+
+        int ugradjenaKolicina = istaKomponenta == null ? 0 : istaKomponenta.getKolicina();
+
+        if (ugradjenaKolicina + 1 > komponenta.getKolicinaNaZalihi()) {
+            throw new IllegalStateException();
+        }
+    }
+
     public void dodajUgradnju() {
         Ugradnja u = new Ugradnja();
         u.setRacunar(racunar);
         u.setKomponenta(komponenta);
         u.setDatumUgradnje(new Date());
         try {
+            proveriKolicinu();
             racunarBO.dodajUgradnju(u);
+        } catch (IllegalStateException ise) {
+            FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "komponentaNijeDodata");
         } catch (NonUniqueResourceException nure) {
             FacesUtils.addMessage(FacesMessage.SEVERITY_WARN, "upozorenje", "komponentaIstogTipaVecPostoji");
         }
