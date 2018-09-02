@@ -65,6 +65,10 @@ html,body{
     border-radius: 0px;
 }
 
+.ui-layout-unit{
+    padding: 0 !important;
+}
+
 div.ui-layout-unit-content.ui-widget-content{
     background-color: transparent;
     overflow-x: hidden;
