@@ -6,7 +6,6 @@
 package com.misinovic.prodavnicaracunara.dao;
 
 import com.misinovic.prodavnicaracunara.domen.Zaposleni;
-import java.util.List;
 import javax.ejb.Local;
 
 /**

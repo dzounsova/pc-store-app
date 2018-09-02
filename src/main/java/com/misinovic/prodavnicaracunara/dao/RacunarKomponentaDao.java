@@ -6,18 +6,12 @@
 package com.misinovic.prodavnicaracunara.dao;
 
 import com.misinovic.prodavnicaracunara.domen.RacunarKomponenta;
-import com.misinovic.prodavnicaracunara.domen.StavkaRacuna;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 
 /**
  *

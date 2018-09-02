@@ -7,7 +7,6 @@ package com.misinovic.prodavnicaracunara.bo;
 
 import com.misinovic.prodavnicaracunara.dao.RacunarKomponentaDaoLocal;
 import com.misinovic.prodavnicaracunara.domen.RacunarKomponenta;
-import com.misinovic.prodavnicaracunara.domen.StavkaRacuna;
 import com.misinovic.prodavnicaracunara.exception.ConstraintViolationException;
 import java.util.List;
 import javax.annotation.Resource;
